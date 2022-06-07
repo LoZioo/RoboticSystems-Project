@@ -1,0 +1,12 @@
+# Folders
+.pio
+node_modules
+
+# json
+c_cpp_properties.json
+extensions.json
+launch.json
+
+# h
+# Save here your Wi-Fi connection info.
+password.h
