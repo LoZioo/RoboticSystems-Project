@@ -2,7 +2,7 @@
 Cross-platform Arduino library for controlling the `RI32` rotary encoder!
 
 # RIVEDERE DA QUI' IN POI!!!
-
+<!--
 ## How to use
 -	Attach you MCP3202 to the 4-Wire SPI interface of your MCU.
 -	Create a new instance of `MCP3202` object and pass the choosed chip select pin to the constructor.
@@ -28,3 +28,4 @@ void loop() {
 	delay(1000);
 }
 ```
+-->
