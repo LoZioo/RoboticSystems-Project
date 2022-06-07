@@ -2,11 +2,17 @@
 .pio
 node_modules
 
+# Default README of PlatformIO
+README
+
+#	VSCode workspace configurations
+*.code-workspace
+
 # json
 c_cpp_properties.json
 extensions.json
 launch.json
 
 # h
-# Save here your Wi-Fi connection info.
+# WiFi connection info
 password.h

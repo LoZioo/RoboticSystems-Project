@@ -4,3 +4,4 @@ RoboticSystems project repository of Davide Scalisi and Luigi Seminara.
 ## Directory organization
 -	`docs`:	documentation of all the project.
 -	`lib`:	all the libraries used inside this project.
+-	`src`:	all the source code for both MCUs.
