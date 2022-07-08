@@ -6,11 +6,11 @@
 LMD18200 motor(LEFT_DIRECTION, RIGHT_DIRECTION);
 
 void setup(){
-	Serial.begin(9600);
+	Serial.begin(115200);
 	motor.begin();
-	
-	motor.left(0, 500);
-	motor.right(0, 500);
+
+	motor.left(DIRECTION_FORWARD, 250);
+	motor.right(DIRECTION_BACKWARD, 250);
 
 	motor.start();
 }
