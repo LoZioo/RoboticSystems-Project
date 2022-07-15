@@ -3,7 +3,8 @@
 ## Davide
 -	Completare classe RI32
 -	Rivedere file README di RI32
-- La sintassi del costruttore con parametri opzionali di SerialController_Target fa buggare l'intellisense.
+-	Fare Readme di tutte le librerie
+-	Gli encoder non leggono bene le distanze, correggere
 
 ## Luigi
 -	Hello World!

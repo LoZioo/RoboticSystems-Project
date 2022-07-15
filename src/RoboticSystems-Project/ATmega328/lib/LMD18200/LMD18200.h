@@ -39,6 +39,7 @@ class LMD18200{
 		void __stop(bool, bool);
 
 	public:
+		//LEFT_DIRECTION, RIGHT_DIRECTION.
 		LMD18200(uint8_t, uint8_t);
 
 		void begin();
