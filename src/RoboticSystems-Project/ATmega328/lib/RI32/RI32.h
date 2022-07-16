@@ -17,15 +17,9 @@
 
 #include <Arduino.h>
 
-// DEBUG.
-extern void loop();
-
 class RI32{
 	private:
 		friend void ENC_L_ISR(), ENC_R_ISR();
-
-		// DEBUG.
-		friend void loop();
 
 		//Quadrature pins; pin_l_a and pin_r_a must be both interrupt pins.
 		static uint8_t pin_l_a, pin_l_b, pin_r_a, pin_r_b;

@@ -20,5 +20,9 @@
 //RI32 wheel parameters.
 #define ENC_RADIUS			0.021
 #define ENC_TICKS				1000
-#define ENC_WHEELBASE		0.1525
-// #define ENC_WHEELBASE		0.305
+
+// #define ENC_WHEELBASE		0.305		//RICONTROLLARE (vd. ToDo.md).
+
+//Locomotion wheel parameters.
+#define LOC_RADIUS			0.03265
+#define LOC_WHEELBASE		0.19
