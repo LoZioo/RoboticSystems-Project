@@ -18,5 +18,7 @@
 #define DELTA_T	1e-3
 
 //RI32 wheel parameters.
-#define ENC_RADIUS	0.021
-#define ENC_TICKS		4000
+#define ENC_RADIUS			0.021
+#define ENC_TICKS				1000
+#define ENC_WHEELBASE		0.1525
+// #define ENC_WHEELBASE		0.305

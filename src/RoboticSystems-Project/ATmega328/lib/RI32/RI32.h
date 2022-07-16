@@ -17,30 +17,39 @@
 
 #include <Arduino.h>
 
+// DEBUG.
+extern void loop();
+
 class RI32{
 	private:
 		friend void ENC_L_ISR(), ENC_R_ISR();
+
+		// DEBUG.
+		friend void loop();
 
 		//Quadrature pins; pin_l_a and pin_r_a must be both interrupt pins.
 		static uint8_t pin_l_a, pin_l_b, pin_r_a, pin_r_b;
 
 		//Encoder traits.
 		uint16_t	enc_ticks;
-		float			enc_radius;
+		float			enc_radius, enc_wheelbase;
 
 		//Sampling period.
 		float dt;
 
 		//Encoder interrupt ticks.
-		static int16_t l_dTicks, r_dTicks;
+		static volatile int16_t dTicks_l, dTicks_r;
 
-		//Left and right cinematic variables.
-		float l_dTheta, l_s = 0, l_ds, l_v;
-		float r_dTheta, r_s = 0, r_ds, r_v;
+		//Left and right speed.
+		float v_l, v_r;
+
+		//Generic cinematic variables.
+		float v, omega;
+		float x = 0, y = 0, theta = 0;
 
 	public:
 		//LEFT_ENCODER_A, LEFT_ENCODER_B, RIGHT_ENCODER_A, RIGHT_ENCODER_B, ENC_TICKS, ENC_RADIUS, DELTA_T.
-		RI32(uint8_t, uint8_t, uint8_t, uint8_t, uint16_t, float, float);
+		RI32(uint8_t, uint8_t, uint8_t, uint8_t, uint16_t, float, float, float);
 		
 		//Must be called 1/dt times per seconds.
 		void evaluate();
@@ -48,13 +57,16 @@ class RI32{
 		//Odomerty reset.
 		void reset();
 
-		float getLeftSpace()				{ return l_s;		}
-		float getLeftDeltaSpace()		{ return l_ds;	}
-		float getLeftSpeed()				{ return l_v;		}
+		float getLeftSpeed()			{ return v_l;	}
+		float getRightSpeed()			{ return v_r;	}
+				
+		float getLinearSpeed()		{ return v;			}
+		float getAngularSpeed()		{ return omega;	}
 
-		float getRightSpace()				{ return r_s;		}
-		float getRightDeltaSpace()	{ return r_ds;	}
-		float getRightSpeed()				{ return r_v;		}
+		float getX()	{	return x;	}
+		float getY()	{	return y;	}
+
+		float getAngle(bool deg = false)	{ return deg ? degrees(theta) : theta;	}
 };
 
 #endif
