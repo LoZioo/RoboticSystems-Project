@@ -73,8 +73,8 @@ void RI32::evaluate(){
 	v = (v_l + v_r) / 2;
 	omega = (v_r - v_l) / enc_wheelbase;
 
-	x += ds * cos(theta + dt/2);
-	y += ds * sin(theta + dt/2);
+	x += ds * cos(theta + dTheta/2);
+	y += ds * sin(theta + dTheta/2);
 	theta = normalize_angle(theta + dTheta);
 }
 
