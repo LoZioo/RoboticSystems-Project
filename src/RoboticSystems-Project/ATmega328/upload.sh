@@ -18,7 +18,7 @@ conf="C:\Users\lozio\.platformio\packages\tool-avrdude\avrdude.conf"
 
 cpu="atmega328p"
 env="nanoatmega328new"
-com="COM4"
+com="COM14"
 speed="115200"
 
 # Caricamento del binario.
