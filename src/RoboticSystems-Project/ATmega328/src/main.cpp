@@ -42,7 +42,8 @@ void setup(){
 
 	motor.start();
 
-	start_timer2();
+	// CODICE NON FUNZIONANTE, NON ABILITARE...
+	// start_timer2();
 }
 
 void loop(){
