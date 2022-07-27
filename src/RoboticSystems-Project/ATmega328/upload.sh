@@ -25,4 +25,4 @@ speed="115200"
 avrdude -v -p $cpu -C $conf -c arduino -b $speed -D -P $com -U flash:w:.pio/build/$env/firmware.hex:i
 
 # Debug seriale.
-~/.platformio/penv/Scripts/platformio device monitor --environment nanoatmega328new
+# ~/.platformio/penv/Scripts/platformio device monitor --environment nanoatmega328new
