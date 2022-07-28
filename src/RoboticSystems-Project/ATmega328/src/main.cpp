@@ -1,28 +1,38 @@
 #include <Arduino.h>
 #include <const.h>
 
+#include <SerialPlotter.h>
+#include <SerialPlotter.cpp>	//Just to avoid link errors.
+
 #include <LMD18200.h>
 #include <RI32.h>
 
 #include <PID.h>
-
-#define	SPEED_TARGET_L	0.5
-#define	SPEED_TARGET_R	-0.5
 
 // #include <SerialController.h>
 
 // NeoSWSerial ss(SS_RX, SS_TX);
 // ss.begin(9600);
 
-template<class T> void plot(T);
+#define	SPEED_TARGET_L	0.5
+#define	SPEED_TARGET_R	-0.5
+
 void start_timer2();
+
+//Serial plotter.
+SerialPlotter<float> plotter(Serial);
 
 LMD18200 motor(LEFT_DIRECTION, RIGHT_DIRECTION);
 RI32 enc(LEFT_ENCODER_A, LEFT_ENCODER_B, RIGHT_ENCODER_A, RIGHT_ENCODER_B, ENC_TICKS, ENC_RADIUS, ENC_WHEELBASE, DELTA_T);
 
 //Speed error to PWM; min/max: [-1000, 1000].
-PID pid_l(DELTA_T, 100, 50, 0, PWM_MAX_VAL, true);
-PID pid_r(DELTA_T, 100, 50, 0, PWM_MAX_VAL, true);
+#define PID_P	1000
+#define PID_I	400
+#define PID_D	0
+
+//DEBUG, I MOTORI VANNO ALL'80% PER VEDERE IL PWN NELL'OSCILLOSCOPIO!
+PID pid_l(DELTA_T, PID_P, PID_I, PID_D, PWM_MAX_VAL - 200, true);
+PID pid_r(DELTA_T, PID_P, PID_I, PID_D, PWM_MAX_VAL - 200, true);
 
 //Tick flag.
 volatile bool tick = false;
@@ -55,16 +65,19 @@ void loop(){
 		int16_t PWM_l = pid_l.evaluate(SPEED_TARGET_L, enc.getLeftSpeed());
 		int16_t PWM_r = pid_r.evaluate(SPEED_TARGET_R, enc.getRightSpeed());
 
-		//Update engine speed.
-		motor.left(PWM_l >= 0 ? DIRECTION_FORWARD : DIRECTION_BACKWARD, abs(PWM_l));
-		motor.right(PWM_r >= 0 ? DIRECTION_FORWARD : DIRECTION_BACKWARD, abs(PWM_r));
+		motor.left(PWM_l);
+		motor.right(PWM_r);
 
-		if(c++ == int(1 / (16 * DELTA_T))){
+		if(c++ == int(1 / (60 * DELTA_T))){
 			c = 0;
 
-			plot<float>(enc.getLeftSpeed() * 100);
-			plot<float>(SPEED_TARGET_L * 100);
-			plot<int16_t>(PWM_l);
+			plotter.start();
+			
+			plotter.push(enc.getLeftSpeed() * 1000);
+			plotter.push(SPEED_TARGET_L * 1000);
+			plotter.push(PWM_l);
+
+			plotter.plot();
 		}
 	}
 }
@@ -83,9 +96,4 @@ void start_timer2(){
 ISR(TIMER2_OVF_vect){
 	TCNT2 = 0xff - TCNT2_OFFSET;
 	tick = true;
-}
-
-template<class T> void plot(T data){
-	float tmp = data;
-	Serial.write((uint8_t*) &tmp, sizeof(float));
 }
