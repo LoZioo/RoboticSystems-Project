@@ -8,13 +8,23 @@ void LMD18200::__write(uint8_t wheel, uint8_t direction, uint16_t pwm){
 	);
 
 	if(wheel){
-		digitalWrite(left_direction_pin, direction);
-		OCR1A = pwm;		//Left wheel.
+		if(pwm == 0)
+			stop_left();
+
+		else{
+			digitalWrite(left_direction_pin, direction);
+			OCR1A = pwm;		//Left wheel.
+		}
 	}
 
 	else{
-		digitalWrite(right_direction_pin, direction);
-		OCR1B = pwm;		//Right wheel.
+		if(pwm == 0)
+			stop_right();
+		
+		else{
+			digitalWrite(right_direction_pin, direction);
+			OCR1B = pwm;		//Right wheel.
+		}
 	}
 }
 
@@ -68,8 +78,16 @@ void LMD18200::left(uint8_t direction, uint16_t pwm){
 	__write(0, direction, pwm);
 }
 
+void LMD18200::left(int16_t pwm_direction_speed){
+	__write(0, pwm_direction_speed >= 0 ? DIRECTION_FORWARD : DIRECTION_BACKWARD, abs(pwm_direction_speed));
+}
+
 void LMD18200::right(uint8_t direction, uint16_t pwm){
 	__write(1, direction, pwm);
+}
+
+void LMD18200::right(int16_t pwm_direction_speed){
+	__write(1, pwm_direction_speed >= 0 ? DIRECTION_FORWARD : DIRECTION_BACKWARD, abs(pwm_direction_speed));
 }
 
 void LMD18200::start(){
