@@ -12,7 +12,7 @@
 // #include <SerialController.h>
 
 //Number of samples per second.
-#define N_SAMPLES	60
+#define N_SAMPLES	30
 
 // NeoSWSerial ss(SS_RX, SS_TX);
 // ss.begin(9600);
@@ -33,8 +33,8 @@ RI32 enc(LEFT_ENCODER_A, LEFT_ENCODER_B, RIGHT_ENCODER_A, RIGHT_ENCODER_B, ENC_T
 #define PID_I	400
 #define PID_D	0
 
-PID pid_l(DELTA_T, PID_P, PID_I, PID_D, PWM_MAX_VAL, true);
-PID pid_r(DELTA_T, PID_P, PID_I, PID_D, PWM_MAX_VAL, true);
+PID pid_l(DELTA_T, PID_P, PID_I, PID_D, LMD18200_PWM_MAX_VAL, true);
+PID pid_r(DELTA_T, PID_P, PID_I, PID_D, LMD18200_PWM_MAX_VAL, true);
 
 //Tick flag.
 volatile bool tick = false;
@@ -85,6 +85,23 @@ void loop(){
 	}
 }
 
+//125Hz sampling rate.
+#define TCNT2_OFFSET 125
+
+void start_timer2(){
+	TCNT2 = 0xff - TCNT2_OFFSET;
+	TIMSK2 = (1 << TOIE2);
+
+	TCCR2A = 0;
+	TCCR2B = (1 << CS20) | (1 << CS21) | (1 << CS22);
+}
+
+ISR(TIMER2_OVF_vect){
+	TCNT2 = 0xff - TCNT2_OFFSET;
+	tick = true;
+}
+
+/*
 //1kHz sampling rate.
 #define TCNT2_OFFSET 250
 
@@ -100,3 +117,4 @@ ISR(TIMER2_OVF_vect){
 	TCNT2 = 0xff - TCNT2_OFFSET;
 	tick = true;
 }
+*/
