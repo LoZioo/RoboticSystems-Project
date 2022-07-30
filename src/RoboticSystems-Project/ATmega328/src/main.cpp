@@ -72,9 +72,8 @@ void loop(){
 		if(d++ == int(1 / (16 * DELTA_T))){
 			d = 0;
 
-			//CORREGGERE A 0m/s.
 			speed_target_l += increment;
-			if(speed_target_l <= 0.2 || speed_target_l >= 1)
+			if(speed_target_l <= 0 || speed_target_l >= 1)
 				increment = -increment;
 
 			speed_target_r = -speed_target_l;
