@@ -16,10 +16,12 @@
 
 #include <Arduino.h>
 
-#define OC1A	9
-#define OC1B	10
+#ifdef __AVR_ATmega328P__
+	#define OC1A	9
+	#define OC1B	10
+#endif
 
-#define PWM_MAX_VAL		1000
+#define LMD18200_PWM_MAX_VAL		1000
 
 enum{
 	DIRECTION_FORWARD,
@@ -44,11 +46,11 @@ class LMD18200{
 
 		void begin();
 		
-		//Write in the left wheel the specified direction and speed (range [0, PWM_MAX_VAL]).
+		//Write in the left wheel the specified direction and speed (range [0, LMD18200_PWM_MAX_VAL]).
 		void left(uint8_t, uint16_t);
 		void left(int16_t);
 
-		//Write in the right wheel the specified direction and speed (range [0, PWM_MAX_VAL]).
+		//Write in the right wheel the specified direction and speed (range [0, LMD18200_PWM_MAX_VAL]).
 		void right(uint8_t, uint16_t);
 		void right(int16_t);
 

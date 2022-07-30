@@ -3,8 +3,8 @@
 void LMD18200::__write(uint8_t wheel, uint8_t direction, uint16_t pwm){
 	direction &= 1;
 	pwm = map(
-		constrain(pwm, 0, PWM_MAX_VAL),
-		0, PWM_MAX_VAL, 0, ICR1
+		constrain(pwm, 0, LMD18200_PWM_MAX_VAL),
+		0, LMD18200_PWM_MAX_VAL, 0, ICR1
 	);
 
 	if(wheel){
@@ -61,17 +61,22 @@ LMD18200::LMD18200(uint8_t left_direction_pin, uint8_t right_direction_pin){
 
 	pinMode(OC1A, OUTPUT);
 	pinMode(OC1B, OUTPUT);
-
-	OCR1A = OCR1B = 0;
 }
 
 void LMD18200::begin(){
-	//PWM frequency: 50kHz
+	/*
+		PWM frequency: 50kHz
+		16.000.000 / (160 * 2 * 1) = 50kHz.
 
-	ICR1 = 320;
+		Where 2 is because we're using Phase Correct PWM mode.
+	*/
+
+	ICR1 = 160;
 
 	TCCR1A = (1 << WGM11);
-	TCCR1B = (1 << WGM12) | (1 << WGM13) | (1 << CS10);
+	TCCR1B = (1 << WGM13) | (1 << CS10);
+
+	OCR1A = OCR1B = 0;
 }
 
 void LMD18200::left(uint8_t direction, uint16_t pwm){
