@@ -17,9 +17,6 @@
 //Sampling rate (8ms -> 125Hz)
 #define DELTA_T	8e-3
 
-//Sampling rate (1ms -> 1kHz)
-// #define DELTA_T	1e-3
-
 //RI32 wheel parameters.
 #define ENC_RADIUS			0.021
 #define ENC_TICKS				1000

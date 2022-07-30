@@ -46,10 +46,6 @@ void setup(){
 	Serial.begin(115200);
 
 	motor.begin();
-
-	motor.left(DIRECTION_FORWARD, 0);
-	motor.right(DIRECTION_BACKWARD, 0);
-
 	motor.start();
 
 	start_timer2();
@@ -100,21 +96,3 @@ ISR(TIMER2_OVF_vect){
 	TCNT2 = 0xff - TCNT2_OFFSET;
 	tick = true;
 }
-
-/*
-//1kHz sampling rate.
-#define TCNT2_OFFSET 250
-
-void start_timer2(){
-	TCNT2 = 0xff - TCNT2_OFFSET;
-	TIMSK2 = (1 << TOIE2);
-
-	TCCR2A = 0;
-	TCCR2B = (1 << CS22);
-}
-
-ISR(TIMER2_OVF_vect){
-	TCNT2 = 0xff - TCNT2_OFFSET;
-	tick = true;
-}
-*/
