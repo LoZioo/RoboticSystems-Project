@@ -61,6 +61,9 @@ LMD18200::LMD18200(uint8_t left_direction_pin, uint8_t right_direction_pin){
 
 	pinMode(OC1A, OUTPUT);
 	pinMode(OC1B, OUTPUT);
+
+	left(0);
+	right(0);
 }
 
 void LMD18200::begin(){
