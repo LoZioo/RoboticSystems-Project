@@ -14,7 +14,7 @@
 #define SS_RX	A0
 #define SS_TX	A1
 
-//Sampling rate (1kHz)
+//Sampling rate (1ms -> 1kHz)
 #define DELTA_T	1e-3
 
 //RI32 wheel parameters.

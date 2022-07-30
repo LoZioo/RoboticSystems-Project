@@ -11,6 +11,9 @@
 
 // #include <SerialController.h>
 
+//Number of samples per second.
+#define N_SAMPLES	60
+
 // NeoSWSerial ss(SS_RX, SS_TX);
 // ss.begin(9600);
 
@@ -30,9 +33,8 @@ RI32 enc(LEFT_ENCODER_A, LEFT_ENCODER_B, RIGHT_ENCODER_A, RIGHT_ENCODER_B, ENC_T
 #define PID_I	400
 #define PID_D	0
 
-//DEBUG, I MOTORI VANNO ALL'80% PER VEDERE IL PWN NELL'OSCILLOSCOPIO!
-PID pid_l(DELTA_T, PID_P, PID_I, PID_D, PWM_MAX_VAL - 200, true);
-PID pid_r(DELTA_T, PID_P, PID_I, PID_D, PWM_MAX_VAL - 200, true);
+PID pid_l(DELTA_T, PID_P, PID_I, PID_D, PWM_MAX_VAL, true);
+PID pid_r(DELTA_T, PID_P, PID_I, PID_D, PWM_MAX_VAL, true);
 
 //Tick flag.
 volatile bool tick = false;
@@ -68,7 +70,7 @@ void loop(){
 		motor.left(PWM_l);
 		motor.right(PWM_r);
 
-		if(c++ == int(1 / (60 * DELTA_T))){
+		if(c++ == int(1 / (N_SAMPLES * DELTA_T))){
 			c = 0;
 
 			plotter.start();
@@ -76,6 +78,7 @@ void loop(){
 			plotter.push(enc.getLeftSpeed() * 1000);
 			plotter.push(SPEED_TARGET_L * 1000);
 			plotter.push(PWM_l);
+			plotter.push(PWM_r);
 
 			plotter.plot();
 		}
