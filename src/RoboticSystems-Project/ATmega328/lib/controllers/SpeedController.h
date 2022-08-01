@@ -47,18 +47,20 @@ class SpeedController{
 		//target_linear_speed/target_vleft, target_angular_speed/target_vright, (false = lin/ang, true = vleft/vright).
 		void evaluate(float, float, bool = false);
 
-		float getLeftSpeed()		{	return enc.getLeftSpeed();	}
-		float getRightSpeed()		{	return enc.getRightSpeed();	}
+		float getLeftSpeed()							{	return enc.getLeftSpeed();	}
+		float getRightSpeed()							{	return enc.getRightSpeed();	}
 
-		float getLinearSpeed()	{	return enc.getLinearSpeed();	}
-		float getAngularSpeed()	{	return enc.getAngularSpeed();	}
+		float getLinearSpeed()						{	return enc.getLinearSpeed();	}
+		float getAngularSpeed()						{	return enc.getAngularSpeed();	}
 
-		float getX()											{	return enc.getX();				}
-		float getY()											{	return enc.getY();				}
+		float getX()											{	return enc.getX();	}
+		float getY()											{	return enc.getY();	}
+
 		float getTheta(bool deg = false)	{ return enc.getTheta(deg);	}
+		float getRho()										{ return enc.getRho();			}
 
-		int16_t getPWM_l()			{	return PWM_l;	}
-		int16_t getPWM_r()			{	return PWM_r;	}
+		int16_t getPWM_l()								{	return PWM_l;	}
+		int16_t getPWM_r()								{	return PWM_r;	}
 };
 
 #endif

@@ -59,8 +59,12 @@ class RI32{
 		float getLinearSpeed()		{ return v;			}
 		float getAngularSpeed()		{ return omega;	}
 
+		//Cartesian.
 		float getX()											{	return x;	}
 		float getY()											{	return y;	}
+
+		//Polar.
+		float getRho()										{	return sqrt(square(x) * square(y));		}
 		float getTheta(bool deg = false)	{ return deg ? degrees(theta) : theta;	}
 };
 
