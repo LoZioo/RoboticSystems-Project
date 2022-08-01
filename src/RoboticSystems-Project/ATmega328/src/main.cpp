@@ -30,6 +30,10 @@ RI32 enc(LEFT_ENCODER_A, LEFT_ENCODER_B, RIGHT_ENCODER_A, RIGHT_ENCODER_B, ENC_T
 //Internal speed controller.
 SpeedController speedController(DELTA_T, 5000, 8000, LMD18200_PWM_MAX_VAL, motor, enc);
 
+//Distance and heading error to linear and angular speed.
+PID PID_module(10, 0, 0, 0, false);
+PID PID_phase(10, 0, 0, 0, false);
+
 //Tick flag.
 volatile bool tick = false;
 
@@ -45,23 +49,39 @@ void setup(){
 	start_timer2();
 }
 
-//+ sinistra, - destra.
-#define TARGET_SPEED	1
+#define TARGET_X	3
+#define TARGET_Y	2
 
 void loop(){
 	//Interrupt occurred.
 	if(tick){
 		tick = false;
 
-		speedController.evaluate(0, TARGET_SPEED);
+		float err_rho = TARGET_X - enc.getX();
+		float target_theta = TARGET_Y - enc.getY();
+
+		cartesian_to_polar(err_rho, target_theta);
+
+		float err_theta = normalize_angle(target_theta - speedController.getTheta());
+
+		if(err_theta > PI/2 || err_theta < -PI/2){
+			err_rho = -err_rho;
+			err_theta += PI;
+		}
+
+		float target_linear_speed = PID_module.evaluate(err_rho);
+		float target_angular_speed = PID_phase.evaluate(err_theta);
+
+		speedController.evaluate(target_linear_speed, target_angular_speed);
 
 		if(c++ == int(1 / (N_SAMPLES * DELTA_T))){
 			c = 0;
 
 			plotter.start();
 			
-			plotter.add(speedController.getAngularSpeed() * 1000);
-			plotter.add(TARGET_SPEED * 1000);
+			plotter.add(speedController.getX() * 1000);
+			plotter.add(speedController.getY() * 1000);
+			plotter.add(speedController.getTheta(true));
 			
 			plotter.add(speedController.getPWM_l());
 			plotter.add(speedController.getPWM_r());
