@@ -84,9 +84,9 @@ void loop(){
 
 			plotter.start();
 			
-			plotter.push(enc.getLeftSpeed() * 1000);
-			plotter.push(speed_target_l * 1000);
-			plotter.push(PWM_l);
+			plotter.add(enc.getLeftSpeed() * 1000);
+			plotter.add(speed_target_l * 1000);
+			plotter.add(PWM_l);
 
 			plotter.plot();
 		}

@@ -7,7 +7,7 @@ void SerialPlotter<T>::start(){
 }
 
 template<class T>
-void SerialPlotter<T>::push(T sample){
+void SerialPlotter<T>::add(T sample){
 	if(append){
 		data.payload[constrain(sp, 0, PAYLOAD_MAXCHANNELS - 1)] = sample;
 		sp++;

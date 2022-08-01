@@ -47,7 +47,7 @@ template<class T> class SerialPlotter{
 		SerialPlotter(Stream& serial) : serial(serial){}
 
 		void start();
-		void push(T);
+		void add(T);
 		void plot();
 };
 
