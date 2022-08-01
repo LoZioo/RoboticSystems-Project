@@ -8,6 +8,9 @@
  * @copyright Copyright (c) 2022
  * 
  * Implementation of a cart speed controller.
+ * About the angular speed sign:
+ * 	+ is defined as left rotation.
+ * 	- is defined as right rotation.
  */
 
 #ifndef SpeedController_H
