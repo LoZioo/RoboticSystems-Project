@@ -9,9 +9,11 @@
 
 #include <PID.h>
 
+#include <speedController.h>
+
 // #include <SerialController.h>
 
-//Number of samples per second.
+//Number of plotted samples per second.
 #define N_SAMPLES	30
 
 // NeoSWSerial ss(SS_RX, SS_TX);
@@ -25,17 +27,8 @@ SerialPlotter<float> plotter(Serial);
 LMD18200 motor(LEFT_DIRECTION, RIGHT_DIRECTION);
 RI32 enc(LEFT_ENCODER_A, LEFT_ENCODER_B, RIGHT_ENCODER_A, RIGHT_ENCODER_B, ENC_TICKS, ENC_RADIUS, ENC_WHEELBASE, DELTA_T);
 
-//Speed error to PWM; min/max: [-1000, 1000].
-#define PID_P	5000
-#define PID_I	8000
-#define PID_D	0
-
-PID pid_l(DELTA_T, PID_P, PID_I, PID_D, LMD18200_PWM_MAX_VAL, true);
-PID pid_r(DELTA_T, PID_P, PID_I, PID_D, LMD18200_PWM_MAX_VAL, true);
-
-float speed_target_l = 0.2;
-float speed_target_r = -0.2;
-float increment = 0.01;
+//Internal speed controller.
+SpeedController speedController(DELTA_T, 5000, 8000, LMD18200_PWM_MAX_VAL, motor, enc);
 
 //Tick flag.
 volatile bool tick = false;
@@ -52,41 +45,26 @@ void setup(){
 	start_timer2();
 }
 
-int d = 0;
+//+ sinistra, - destra.
+#define TARGET_SPEED	1
 
 void loop(){
 	//Interrupt occurred.
 	if(tick){
 		tick = false;
 
-		//Read new data.
-		enc.evaluate();
-
-		//From speed errors to PWM.
-		int16_t PWM_l = pid_l.evaluate(speed_target_l, enc.getLeftSpeed());
-		int16_t PWM_r = pid_r.evaluate(speed_target_r, enc.getRightSpeed());
-
-		motor.left(PWM_l);
-		motor.right(PWM_r);
-
-		if(d++ == int(1 / (16 * DELTA_T))){
-			d = 0;
-
-			speed_target_l += increment;
-			if(speed_target_l <= 0 || speed_target_l >= 1)
-				increment = -increment;
-
-			speed_target_r = -speed_target_l;
-		}
+		speedController.evaluate(0, TARGET_SPEED);
 
 		if(c++ == int(1 / (N_SAMPLES * DELTA_T))){
 			c = 0;
 
 			plotter.start();
 			
-			plotter.add(enc.getLeftSpeed() * 1000);
-			plotter.add(speed_target_l * 1000);
-			plotter.add(PWM_l);
+			plotter.add(speedController.getAngularSpeed() * 1000);
+			plotter.add(TARGET_SPEED * 1000);
+			
+			plotter.add(speedController.getPWM_l());
+			plotter.add(speedController.getPWM_r());
 
 			plotter.plot();
 		}
