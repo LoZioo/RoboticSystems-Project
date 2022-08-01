@@ -53,9 +53,11 @@ class SpeedController{
 		float getLinearSpeed()						{	return enc.getLinearSpeed();	}
 		float getAngularSpeed()						{	return enc.getAngularSpeed();	}
 
+		//Cartesian.
 		float getX()											{	return enc.getX();	}
 		float getY()											{	return enc.getY();	}
 
+		//Polar.
 		float getRho()										{ return enc.getRho();			}
 		float getTheta(bool deg = false)	{ return enc.getTheta(deg);	}
 
