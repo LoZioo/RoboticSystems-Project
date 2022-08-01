@@ -56,8 +56,8 @@ class SpeedController{
 		float getX()											{	return enc.getX();	}
 		float getY()											{	return enc.getY();	}
 
-		float getTheta(bool deg = false)	{ return enc.getTheta(deg);	}
 		float getRho()										{ return enc.getRho();			}
+		float getTheta(bool deg = false)	{ return enc.getTheta(deg);	}
 
 		int16_t getPWM_l()								{	return PWM_l;	}
 		int16_t getPWM_r()								{	return PWM_r;	}
