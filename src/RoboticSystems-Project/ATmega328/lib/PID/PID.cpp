@@ -26,18 +26,20 @@ float PID::evaluate(float err){
 	
 	float output = (kp * err) + integral + derivative * kd;
 
-	if(output > sat){
-		output = sat;
-		in_saturation = true;
-	}
+	if(sat != 0){
+		if(output > sat){
+			output = sat;
+			in_saturation = true;
+		}
 
-	else if(output < -sat){
-		output = -sat;
-		in_saturation = true;
-	}
+		else if(output < -sat){
+			output = -sat;
+			in_saturation = true;
+		}
 
-	else
-		in_saturation = false;
+		else
+			in_saturation = false;
+	}
 
 	return output;
 }
