@@ -1,17 +1,5 @@
 #include <RI32.h>
 
-//--------------------------------------- Funzioni ------------------------------------//
-
-inline float normalize_angle(float a){
-	while(a > PI)
-		a -= 2 * PI;
-	
-	while(a < -PI)
-		a += 2 * PI;
-	
-	return a;
-}
-
 //----------------------------------------- ISR ---------------------------------------//
 
 uint8_t RI32::pin_l_a, RI32::pin_l_b, RI32::pin_r_a, RI32::pin_r_b;

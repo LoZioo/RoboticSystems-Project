@@ -16,6 +16,7 @@
 #define RI32_H
 
 #include <Arduino.h>
+#include <utils.h>
 
 class RI32{
 	friend void ENC_L_ISR(), ENC_R_ISR();
