@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <WiFi.h>
 
 // DEFINISCI LE PASSWORD DEL WIFI IN include/password.h
 // IL FILE è IGNORATO TRAMITE IL GITIGNORE NELLA ROOT DELLA REPO!
@@ -15,6 +16,8 @@
 
 void setup() {
   // put your setup code here, to run once:
+
+	WiFi.begin(STASSID, STAPSK);
 }
 
 void loop() {
