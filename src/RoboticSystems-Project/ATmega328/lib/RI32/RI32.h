@@ -51,6 +51,8 @@ class RI32{
 		//Odomerty reset.
 		void reset();
 
+		float getWheelbase()			{	return enc_wheelbase;	}
+
 		float getLeftSpeed()			{ return v_l;	}
 		float getRightSpeed()			{ return v_r;	}
 				
