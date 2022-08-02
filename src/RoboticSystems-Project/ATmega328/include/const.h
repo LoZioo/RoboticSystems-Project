@@ -23,12 +23,12 @@
 #define ENC_WHEELBASE		0.305
 
 //Locomotion wheel parameters.
-#define LOC_RADIUS			0.0315
-#define LOC_WHEELBASE		0.182
+// #define LOC_RADIUS			0.0315
+// #define LOC_WHEELBASE		0.182
 
 //Robot traits.
-#define ROB_WEIGHT						6			//Kg
-// #define ROB_MAX_SPEED					1			//m/s
+// #define ROB_WEIGHT						6			//Kg
+#define ROB_MAX_SPEED					0.5		//m/s
 
-#define ROB_LIN_AIR_FRICTION	0.8
-#define ROB_ROT_AIR_FRICTION	0.8
+// #define ROB_LIN_AIR_FRICTION	0.8
+// #define ROB_ROT_AIR_FRICTION	0.8
