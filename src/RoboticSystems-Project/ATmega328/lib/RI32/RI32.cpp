@@ -15,17 +15,13 @@ void ENC_R_ISR(){
 
 //----------------------------------------- RI32 --------------------------------------//
 
-RI32::RI32(uint8_t pin_l_a, uint8_t pin_l_b, uint8_t pin_r_a, uint8_t pin_r_b, uint16_t enc_ticks, float enc_radius, float enc_wheelbase, float dt){
+RI32::RI32(uint8_t pin_l_a, uint8_t pin_l_b, uint8_t pin_r_a, uint8_t pin_r_b, float dt, uint16_t enc_ticks, float enc_radius, float enc_wheelbase)
+: dt(dt), enc_ticks(enc_ticks), enc_radius(enc_radius), enc_wheelbase(enc_wheelbase){
+	
 	RI32::pin_l_a = pin_l_a;
 	RI32::pin_l_b = pin_l_b;
 	RI32::pin_r_a = pin_r_a;
 	RI32::pin_r_b = pin_r_b;
-
-	this->enc_ticks = enc_ticks;
-	this->enc_radius = enc_radius;
-	this->enc_wheelbase = enc_wheelbase;
-	
-	this->dt = dt;
 
 	pinMode(pin_l_a, INPUT);
 	pinMode(pin_l_b, INPUT);
