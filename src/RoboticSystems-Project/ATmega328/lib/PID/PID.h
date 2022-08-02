@@ -29,7 +29,7 @@ class PID{
 
 	public:
 		//dt, kp, ki, kd, sat, anti_windup
-		PID(float dt, float kp, float ki, float kd, float sat, float anti_windup = false)
+		PID(float dt, float kp, float ki, float kd, float sat, bool anti_windup = false)
 			: dt(dt), kp(kp), ki(ki), kd(kd), sat(sat), anti_windup(anti_windup) {}
 
 		float evaluate(float);
