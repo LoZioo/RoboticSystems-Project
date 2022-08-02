@@ -65,7 +65,7 @@ class RI32{
 		float getY()											{	return y;	}
 
 		//Polar.
-		float getRho()										{	return sqrt(square(x) + square(y));		}
+		float getRho()										{	return hypot(x, y);										}
 		float getTheta(bool deg = false)	{ return deg ? degrees(theta) : theta;	}
 };
 
