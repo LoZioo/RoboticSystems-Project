@@ -14,13 +14,22 @@
 //Number of plotted samples per second.
 #define N_SAMPLES	30
 
-// NeoSWSerial ss(SS_RX, SS_TX);
-// ss.begin(9600);
+#define TARGET_X		0.8
+#define TARGET_Y		0.8
+#define TARGET_RHO	hypot(TARGET_X, TARGET_Y)
+
+#define TARGET_THETA	90
+
+#define TOL_RHO		0.01
+#define TOL_THETA	1			//Deg.
 
 inline void start_timer2(), stop_timer2();
 
 //Serial plotter.
 SerialPlotter<float> plotter(Serial);
+
+// NeoSWSerial ss(SS_RX, SS_TX);
+// ss.begin(9600);
 
 LMD18200 motor(LEFT_DIRECTION, RIGHT_DIRECTION);
 RI32 enc(LEFT_ENCODER_A, LEFT_ENCODER_B, RIGHT_ENCODER_A, RIGHT_ENCODER_B, DELTA_T, ENC_TICKS, ENC_RADIUS, ENC_WHEELBASE);
@@ -46,15 +55,6 @@ void setup(){
 	start_timer2();
 }
 
-#define TARGET_X		0.8
-#define TARGET_Y		0.8
-#define TARGET_RHO	hypot(TARGET_X, TARGET_Y)
-
-#define TARGET_THETA	90
-
-#define TOL_RHO		0.01
-#define TOL_THETA	1			//Deg.
-
 void loop(){
 	//Interrupt occurred.
 	if(tick){
@@ -73,7 +73,7 @@ void loop(){
 					enc.getTheta() < normalize_angle(radians(TARGET_THETA) + radians(TOL_THETA))
 				)
 			){
-				//Stop engines.
+				//Stop engine.
 				motor.stop();
 
 				//Stop control system.
