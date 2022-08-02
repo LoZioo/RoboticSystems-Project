@@ -15,6 +15,7 @@
 
 #include <Arduino.h>
 
+//Angle normalization in range [-PI, PI].
 inline float normalize_angle(float a){
 	while(a > PI)
 		a -= 2 * PI;
@@ -23,14 +24,6 @@ inline float normalize_angle(float a){
 		a += 2 * PI;
 	
 	return a;
-}
-
-inline void cartesian_to_polar(float &x, float &y){
-	float rho = sqrt(square(x) + square(y));
-	float theta = atan2(y, x);
-
-	x = rho;
-	y = theta;
 }
 
 #endif
