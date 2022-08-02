@@ -4,16 +4,16 @@ float PID::evaluate(float err){
 	float derivative = (err - prev_err) / dt;
 	prev_err = err;
 
-	// if(!(anti_windup && in_saturation))
-	// 	integral += ki * err * dt;
+	if(!(anti_windup && in_saturation))
+		integral += ki * err * dt;
 
-	if(!anti_windup)
-		integral += ki * err * dt;
+	// if(!anti_windup)
+	// 	integral += ki * err * dt;
 	
-	else if(!in_saturation)
-		integral += ki * err * dt;
+	// else if(!in_saturation)
+	// 	integral += ki * err * dt;
 	
-	float output = (kp * err) + integral + derivative * kd;
+	float output = (kp * err) + integral + (kd * derivative);
 
 	if(sat != 0){
 		if(output > sat){
