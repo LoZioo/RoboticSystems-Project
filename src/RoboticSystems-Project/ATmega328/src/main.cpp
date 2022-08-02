@@ -2,14 +2,12 @@
 #include <const.h>
 
 #include <SerialPlotter.h>
-#include <SerialPlotter.cpp>	//Just to avoid link errors.
+#include <SerialPlotter.cpp>	//Just to avoid linker errors.
 
 #include <LMD18200.h>
 #include <RI32.h>
-
 #include <PID.h>
-
-#include <speedController.h>
+#include <Controllers.h>
 
 // #include <SerialController.h>
 
@@ -25,15 +23,10 @@ inline void start_timer2(), stop_timer2();
 SerialPlotter<float> plotter(Serial);
 
 LMD18200 motor(LEFT_DIRECTION, RIGHT_DIRECTION);
-RI32 enc(LEFT_ENCODER_A, LEFT_ENCODER_B, RIGHT_ENCODER_A, RIGHT_ENCODER_B, ENC_TICKS, ENC_RADIUS, ENC_WHEELBASE, DELTA_T);
+RI32 enc(LEFT_ENCODER_A, LEFT_ENCODER_B, RIGHT_ENCODER_A, RIGHT_ENCODER_B, DELTA_T, ENC_TICKS, ENC_RADIUS, ENC_WHEELBASE);
 
-//Internal speed controller.
-// SpeedController speedController(DELTA_T, 5000, 8000, LMD18200_PWM_MAX_VAL, motor, enc);
 SpeedController speedController(DELTA_T, 1000, 3000, LMD18200_PWM_MAX_VAL, motor, enc);
-
-//Distance and heading error to linear and angular speed.
-PID PID_module(DELTA_T, 1, 0, 0, 0.5);
-PID PID_phase(DELTA_T, 1, 0, 0, 0.5);
+PositionController positionController(DELTA_T, 1, ROB_MAX_SPEED, speedController);
 
 //Tick flag.
 volatile bool tick = false;
@@ -53,8 +46,8 @@ void setup(){
 	start_timer2();
 }
 
-#define TARGET_X		-0.8
-#define TARGET_Y		-0.8
+#define TARGET_X		0.8
+#define TARGET_Y		0.8
 #define TARGET_RHO	hypot(TARGET_X, TARGET_Y)
 
 #define TARGET_THETA	90
@@ -68,29 +61,17 @@ void loop(){
 		tick = false;
 
 		if(evaluate){
-			float err_x = TARGET_X - enc.getX();
-			float err_y = TARGET_Y - enc.getY();
-
-			float err_rho = hypot(err_x, err_y);
-			float err_theta = normalize_angle(atan2(err_y, err_x) - enc.getTheta());
-
-			if(err_theta < -PI/2 || err_theta > PI/2){
-				err_rho = -err_rho;
-				err_theta = normalize_angle(err_theta + PI);
-			}
-
-			float target_linear_speed = PID_module.evaluate(err_rho);
-			float target_angular_speed = PID_phase.evaluate(err_theta);
-
-			speedController.evaluate(target_linear_speed, target_angular_speed);
+			positionController.evaluate(TARGET_X, TARGET_Y, radians(TARGET_THETA));
 
 			//Tollerance check.
 			if(
-				// (enc.getX() > TARGET_X - TOL_X && enc.getX() < float(TARGET_X + TOL_X)) &&
-				// (enc.getY() > TARGET_Y - TOL_Y && enc.getY() < float(TARGET_Y + TOL_Y)) &&
-
-				(enc.getRho() > TARGET_RHO - TOL_RHO && enc.getRho() < TARGET_RHO + TOL_RHO) &&
-				(enc.getTheta() > normalize_angle(radians(TARGET_THETA) - radians(TOL_THETA)) && enc.getTheta() < normalize_angle(radians(TARGET_THETA) + radians(TOL_THETA)))
+				(
+					enc.getRho() > TARGET_RHO - TOL_RHO &&
+					enc.getRho() < TARGET_RHO + TOL_RHO
+				) && (
+					enc.getTheta() > normalize_angle(radians(TARGET_THETA) - radians(TOL_THETA)) &&
+					enc.getTheta() < normalize_angle(radians(TARGET_THETA) + radians(TOL_THETA))
+				)
 			){
 				//Stop engines.
 				motor.stop();
@@ -112,12 +93,9 @@ void loop(){
 
 			plotter.add(TARGET_RHO * 1000);
 			plotter.add(TARGET_THETA);
-
-			// plotter.add(target_linear_speed * 1000);
-			// plotter.add(degrees(target_angular_speed));
 			
-			plotter.add(speedController.getPWM_l());
-			plotter.add(speedController.getPWM_r());
+			plotter.add(speedController.getLeftPWM());
+			plotter.add(speedController.getRightPWM());
 
 			plotter.plot();
 		}
