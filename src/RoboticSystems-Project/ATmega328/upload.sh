@@ -21,8 +21,8 @@ env="nanoatmega328new"
 com="COM14"
 speed="115200"
 
-# Caricamento del binario.
-avrdude -v -p $cpu -C $conf -c arduino -b $speed -D -P $com -U flash:w:.pio/build/$env/firmware.hex:i
+# Caricamento del binario (-V non verifica la flash dopo la scrittura).
+avrdude -V -v -p $cpu -C $conf -c arduino -b $speed -D -P $com -U flash:w:.pio/build/$env/firmware.hex:i
 
 # Debug seriale.
 # ~/.platformio/penv/Scripts/platformio device monitor --environment nanoatmega328new
