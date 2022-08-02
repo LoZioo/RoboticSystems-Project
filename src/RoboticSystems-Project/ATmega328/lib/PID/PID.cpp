@@ -1,16 +1,5 @@
 #include <PID.h>
 
-PID::PID(float dt, float kp, float ki, float kd, float sat, float anti_windup){
-	this->dt = dt;
-	
-	this->kp = kp;
-	this->ki = ki;
-	this->kd = kd;
-
-	this->sat = sat;
-	this->anti_windup = anti_windup;
-}
-
 float PID::evaluate(float err){
 	float derivative = (err - prev_err) / dt;
 	prev_err = err;
