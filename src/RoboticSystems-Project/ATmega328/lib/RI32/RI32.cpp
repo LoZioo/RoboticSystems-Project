@@ -30,8 +30,6 @@ RI32::RI32(uint8_t pin_l_a, uint8_t pin_l_b, uint8_t pin_r_a, uint8_t pin_r_b, f
 
 	attachInterrupt(digitalPinToInterrupt(pin_l_a), ENC_L_ISR, RISING);
 	attachInterrupt(digitalPinToInterrupt(pin_r_a), ENC_R_ISR, RISING);
-
-	reset();
 }
 
 void RI32::evaluate(){
@@ -62,10 +60,12 @@ void RI32::evaluate(){
 	theta = normalize_angle(theta + dTheta);
 }
 
-void RI32::reset(){
-	dTicks_l = v_l = 0;
-	dTicks_r = v_r = 0;
+void RI32::resetX(){
+	x = 0;
+	theta = 0;
+}
 
-	v = omega = 0;
-	x = y = theta = 0;
+void RI32::resetY(){
+	y = 0;
+	theta = 90;
 }

@@ -50,7 +50,8 @@ class RI32{
 		void evaluate();
 
 		//Odomerty reset.
-		void reset();
+		void resetX();
+		void resetY();
 
 		//Speeds.
 		float getLeftSpeed()			{ return v_l;	}
