@@ -9,7 +9,7 @@
 #include <PID.h>
 #include <Controllers.h>
 
-// #include <SerialController.h>
+#include <SerialController.h>
 
 //Number of plotted samples per second.
 #define N_SAMPLES	30
@@ -27,9 +27,6 @@ inline void start_timer2(), stop_timer2();
 
 //Serial plotter.
 SerialPlotter<float> plotter(Serial);
-
-// NeoSWSerial ss(SS_RX, SS_TX);
-// ss.begin(9600);
 
 LMD18200 motor(LEFT_DIRECTION, RIGHT_DIRECTION);
 RI32 enc(LEFT_ENCODER_A, LEFT_ENCODER_B, RIGHT_ENCODER_A, RIGHT_ENCODER_B, DELTA_T, ENC_TICKS, ENC_RADIUS, ENC_WHEELBASE);
