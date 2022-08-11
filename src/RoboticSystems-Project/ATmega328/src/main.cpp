@@ -9,30 +9,36 @@
 #include <PID.h>
 #include <Controllers.h>
 
-#include <SerialController.h>
+#include <NeoSWSerial.h>
+#include <packet.h>
 
-//Number of plotted samples per second.
+//Number of plotted samples per second (debug).
 #define N_SAMPLES	30
 
-#define TARGET_X		0.8
-#define TARGET_Y		0.8
-#define TARGET_RHO	hypot(TARGET_X, TARGET_Y)
+//Tollerance errors definition.
+#define TOL_RHO		0.01	//m.
+#define TOL_THETA	1			//deg.
 
-#define TARGET_THETA	90
-
-#define TOL_RHO		0.01
-#define TOL_THETA	1			//Deg.
-
-inline void start_timer2(), stop_timer2();
+inline void handle_packet(), reset_routine(), start_timer2(), stop_timer2();
 
 //Serial plotter.
 SerialPlotter<float> plotter(Serial);
 
+//Serial control interface.
+NeoSWSerial ss(SS_RX, SS_TX);
+packet_t<> packet;
+
+//Hardware.
 LMD18200 motor(LEFT_DIRECTION, RIGHT_DIRECTION);
 RI32 enc(LEFT_ENCODER_A, LEFT_ENCODER_B, RIGHT_ENCODER_A, RIGHT_ENCODER_B, DELTA_T, ENC_TICKS, ENC_RADIUS, ENC_WHEELBASE);
 
-SpeedController speedController(DELTA_T, 1000, 3000, LMD18200_PWM_MAX_VAL, motor, enc);
-PositionController positionController(DELTA_T, 1, ROB_MAX_SPEED, speedController);
+//Controllers.
+SpeedController speedController(DELTA_T, S_KP, S_KI, LMD18200_PWM_MAX_VAL, motor, enc);
+PositionController positionController(DELTA_T, P_MODULE_KP, P_PHASE_KP, ROB_MAX_SPEED, speedController);
+
+//Target for the position controller.
+float	target_x = 0, target_y = 0, target_theta = 0;		//m, m, deg.
+float target_rho = 0;																	//hypot(target_x, target_y);
 
 //Tick flag.
 volatile bool tick = false;
@@ -45,6 +51,7 @@ int c = 0;
 
 void setup(){
 	Serial.begin(115200);
+	ss.begin(SS_SPEED);
 
 	motor.begin();
 	motor.start();
@@ -58,16 +65,16 @@ void loop(){
 		tick = false;
 
 		if(evaluate){
-			positionController.evaluate(TARGET_X, TARGET_Y, radians(TARGET_THETA));
+			positionController.evaluate(target_x, target_y, radians(target_theta));
 
 			//Tollerance check.
 			if(
 				(
-					enc.getRho() > TARGET_RHO - TOL_RHO &&
-					enc.getRho() < TARGET_RHO + TOL_RHO
+					enc.getRho() > target_rho - TOL_RHO &&
+					enc.getRho() < target_rho + TOL_RHO
 				) && (
-					enc.getTheta() > normalize_angle(radians(TARGET_THETA) - radians(TOL_THETA)) &&
-					enc.getTheta() < normalize_angle(radians(TARGET_THETA) + radians(TOL_THETA))
+					enc.getTheta() > normalize_angle(radians(target_theta) - radians(TOL_THETA)) &&
+					enc.getTheta() < normalize_angle(radians(target_theta) + radians(TOL_THETA))
 				)
 			){
 				//Stop engine.
@@ -88,8 +95,8 @@ void loop(){
 			plotter.add(enc.getRho() * 1000);
 			plotter.add(enc.getTheta(true));
 
-			plotter.add(TARGET_RHO * 1000);
-			plotter.add(TARGET_THETA);
+			plotter.add(target_rho * 1000);
+			plotter.add(target_theta);
 			
 			plotter.add(speedController.getLeftPWM());
 			plotter.add(speedController.getRightPWM());
@@ -97,6 +104,86 @@ void loop(){
 			plotter.plot();
 		}
 	}
+
+	//Time to check for some serial packets.
+	else{
+		if(ss.available()){
+			ss.readBytes((uint8_t*) &packet, sizeof(packet));
+			handle_packet();
+			ss.write((uint8_t*) &packet, sizeof(packet));
+		}
+	}
+}
+
+inline void handle_packet(){
+	//Check for CRC8 errors.
+	if(crc8_packet<>(packet) != packet.crc8){
+		packet.payload.msg = CONTROL_WRONG_CRC;
+		packet.payload.argc = 0;
+		return;
+	}
+
+	packet_command_t com = packet.payload.msg;
+
+	//Default reply values.
+	packet.payload.msg = CONTROL_OK;
+	packet.payload.argc = 0;
+
+	switch(com){		
+		case COMMAND_RESET:
+			enc.reset();
+			break;
+		
+		case COMMAND_RESET_ROUTINE:
+			reset_routine();
+			break;
+		
+		case COMMAND_POSE:
+			packet.payload.argc = 3;
+
+			packet.payload.argv[0] = enc.getX();
+			packet.payload.argv[1] = enc.getY();
+			packet.payload.argv[2] = enc.getTheta();
+			break;
+		
+		case COMMAND_GOTO:
+			target_x = packet.payload.argv[0];
+			target_y = packet.payload.argv[1];
+			target_theta = packet.payload.argv[2];
+			target_rho = hypot(target_x, target_y);
+			break;
+		
+		case COMMAND_KPID_SET:
+			positionController.setModuleKp(packet.payload.argv[0]);
+			positionController.setPhaseKp(packet.payload.argv[1]);
+			speedController.setKp(packet.payload.argv[2]);
+			speedController.setKi(packet.payload.argv[3]);
+		
+		//Continue after COMMAND_KPID_SET:
+		case COMMAND_KPID_GET:
+			packet.payload.argc = 4;
+
+			packet.payload.argv[0] = positionController.getModuleKp();
+			packet.payload.argv[1] = positionController.getPhaseKp();
+			packet.payload.argv[2] = speedController.getKp();
+			packet.payload.argv[3] = speedController.getKi();
+			break;
+		
+		case CONTROL_OK:
+		case CONTROL_WRONG_CRC:
+		case CONTROL_INVALID_MSG:
+			break;
+
+		default:
+			packet.payload.msg = CONTROL_INVALID_MSG;
+			break;
+	}
+
+	packet.crc8 = crc8_packet<>(packet);
+}
+
+inline void reset_routine(){
+	//SCRIVERE!
 }
 
 //125Hz sampling rate.
