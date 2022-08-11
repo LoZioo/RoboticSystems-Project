@@ -16,13 +16,13 @@ void SpeedController::__to_lr_speed(float &lin_speed, float &ang_speed){
 SpeedController::SpeedController(float dt, float kp, float ki, uint16_t sat, LMD18200 &motor, RI32 &enc)
 : motor(motor), enc(enc), dt(dt){
 
-	pid_l = new PID(dt, kp, ki, 0, sat, true);
-	pid_r = new PID(dt, kp, ki, 0, sat, true);
+	PID_l = new PID(dt, kp, ki, 0, sat, true);
+	PID_r = new PID(dt, kp, ki, 0, sat, true);
 }
 
 SpeedController::~SpeedController(){
-	delete pid_l;
-	delete pid_r;
+	delete PID_l;
+	delete PID_r;
 }
 
 void SpeedController::evaluate(float target_v, float target_omega, bool l_r_target_speed){
@@ -37,8 +37,8 @@ void SpeedController::evaluate(float target_v, float target_omega, bool l_r_targ
 	enc.evaluate();
 
 	//From speed errors to PWM.
-	PWM_l = pid_l->evaluate(target_speed_l, enc.getLeftSpeed());
-	PWM_r = pid_r->evaluate(target_speed_r, enc.getRightSpeed());
+	PWM_l = PID_l->evaluate(target_speed_l, enc.getLeftSpeed());
+	PWM_r = PID_r->evaluate(target_speed_r, enc.getRightSpeed());
 
 	//Write new data.
 	motor.left(PWM_l);
@@ -47,11 +47,11 @@ void SpeedController::evaluate(float target_v, float target_omega, bool l_r_targ
 
 //----------------------------------------- PositionController ---------------------------------------//
 
-PositionController::PositionController(float dt, float kp, float sat, SpeedController &speedController)
+PositionController::PositionController(float dt, float module_kp, float phase_kp, float sat, SpeedController &speedController)
 : speedController(speedController), dt(dt){
 
-	PID_module = new PID(dt, kp, 0, 0, sat);
-	PID_phase = new PID(dt, kp, 0, 0, sat);
+	PID_module = new PID(dt, module_kp, 0, 0, sat);
+	PID_phase = new PID(dt, phase_kp, 0, 0, sat);
 }
 
 PositionController::~PositionController(){

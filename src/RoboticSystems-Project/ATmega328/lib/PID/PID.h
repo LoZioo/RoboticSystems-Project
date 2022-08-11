@@ -34,6 +34,20 @@ class PID{
 
 		float evaluate(float);
 		float evaluate(float, float);
+
+		float getKp()	{	return kp;	}
+		float getKi()	{	return ki;	}
+		float getKd()	{	return kd;	}
+
+		float	getSat()					{	return sat;					}
+		bool	getAntiwindup()		{	return anti_windup;	}
+
+		void setKp(float kp)	{	this->kp = kp;	}
+		void setKi(float ki)	{	this->ki = ki;	}
+		void setKd(float kd)	{	this->kd = kd;	}
+
+		void setSat(float sat)									{	this->sat = sat;									}
+		void setAntiwindup(float anti_windup)		{	this->anti_windup = anti_windup;	}
 };
 
 #endif

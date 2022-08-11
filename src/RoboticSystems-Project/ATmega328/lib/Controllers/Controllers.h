@@ -34,7 +34,7 @@ class SpeedController{
 		RI32 &enc;
 
 		//Speed error to PWM; min/max: [-LMD18200_PWM_MAX_VAL, LMD18200_PWM_MAX_VAL].
-		PID *pid_l, *pid_r;
+		PID *PID_l, *PID_r;
 
 		//Sampling period.
 		float dt;
@@ -54,6 +54,12 @@ class SpeedController{
 
 		int16_t getLeftPWM()	{	return PWM_l;	}
 		int16_t getRightPWM()	{	return PWM_r;	}
+
+		float getKp()	{	return PID_l->getKp();	}
+		float getKi()	{	return PID_l->getKi();	}
+
+		void setKp(float kp)	{	PID_l->setKp(kp);	PID_r->setKp(kp);	}
+		void setKi(float ki)	{	PID_l->setKi(ki);	PID_r->setKi(ki);	}
 };
 
 class PositionController{
@@ -70,8 +76,8 @@ class PositionController{
 		float target_linear_speed, target_angular_speed;
 
 	public:
-		//delta_t, proportional_k, saturation_speed, speed_controller, engine, encoder.
-		PositionController(float, float, float, SpeedController&);
+		//delta_t, module_proportional_k, phase_proportional_k, saturation_speed, speed_controller, engine, encoder.
+		PositionController(float, float, float, float, SpeedController&);
 		~PositionController();
 
 		//target_x, target_y, target_theta.
@@ -79,6 +85,12 @@ class PositionController{
 
 		float getTargetLinearSpeed()	{	return target_linear_speed;		}
 		float getTargetAngularSpeed()	{	return target_angular_speed;	}
+
+		float getModuleKp()	{	return PID_module->getKp();	}
+		float getPhaseKp()	{	return PID_phase->getKp();	}
+
+		void setModuleKp(float kp)	{	PID_module->setKp(kp);	}
+		void setPhaseKp(float kp)		{	PID_phase->setKp(kp);		}
 };
 
 #endif
