@@ -49,7 +49,10 @@ class RI32{
 		//Must be called 1/dt times per seconds.
 		void evaluate();
 
-		//Odomerty reset.
+		//Odomerty reset (on the current (x, y, theta) point of the space).
+		void reset();
+
+		//Odomerty reset (switch routines).
 		void resetX();
 		void resetY();
 

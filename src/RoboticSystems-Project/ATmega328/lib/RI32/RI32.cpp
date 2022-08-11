@@ -60,6 +60,10 @@ void RI32::evaluate(){
 	theta = normalize_angle(theta + dTheta);
 }
 
+void RI32::reset(){
+	x = y = theta = 0;
+}
+
 void RI32::resetX(){
 	x = 0;
 	theta = 0;
