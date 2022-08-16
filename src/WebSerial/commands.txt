@@ -1,0 +1,5 @@
+{"com":"COMMAND_POSE"}
+{"com":"COMMAND_GOTO","data":[0.5,0,0]}
+
+{"com":"COMMAND_KPID_GET"}
+{"com":"COMMAND_KPID_SET","data":[1,1,1,1]}
