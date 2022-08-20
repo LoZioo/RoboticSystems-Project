@@ -12,7 +12,7 @@
 #include <packet.h>
 #include <password.h>
 
-void serialCallback(uint8_t *data, size_t len);
+void webSerialCallback(uint8_t *data, size_t len);
 
 AsyncWebServer server(80);
 DynamicJsonDocument doc(1024);
@@ -47,7 +47,7 @@ void setup(){
     req->send(200, "text/html", res);
   });
 
-	WebSerial.msgCallback(serialCallback);
+	WebSerial.msgCallback(webSerialCallback);
 
   AsyncElegantOTA.begin(&server);
 	WebSerial.begin(&server);
@@ -56,44 +56,67 @@ void setup(){
 
 void loop(){}
 
-void serialCallback(uint8_t *data, size_t len){
+void webSerialCallback(uint8_t *data, size_t len){
+	//Example:	{"com":"COMMAND_KPID_SET","data":[1,1,1,1]}
+	//Shell:		./websocat ws://192.168.1.44/webserialws
+	
+	String res;
 	deserializeJson(doc, data);
 
 	//Identify command.
-	if(doc["com"] == "COMMAND_RESET"){
+	if(doc["com"] == "COMMAND_RESET")
 		packet.com = COMMAND_RESET;
-		packet.argc = 0;
-	}		
 
-	else if(doc["com"] == "COMMAND_RESET_ROUTINE"){
+	else if(doc["com"] == "COMMAND_RESET_ROUTINE")
 		packet.com = COMMAND_RESET_ROUTINE;
-		packet.argc = 0;
-	}
 
-	else if(doc["com"] == "COMMAND_POSE"){
+	else if(doc["com"] == "COMMAND_POSE")
 		packet.com = COMMAND_POSE;
-		packet.argc = 0;
-	}
 
-	else if(doc["com"] == "COMMAND_GOTO"){
+	else if(doc["com"] == "COMMAND_GOTO")
 		packet.com = COMMAND_GOTO;
-		packet.argc = 3;
-	}
+	
+	else if(doc["com"] == "COMMAND_STOP")
+		packet.com = COMMAND_STOP;
 
-	else if(doc["com"] == "COMMAND_KPID_GET"){
+	else if(doc["com"] == "COMMAND_KPID_GET")
 		packet.com = COMMAND_KPID_GET;
-		packet.argc = 0;
-	}
 
-	else if(doc["com"] == "COMMAND_KPID_SET"){
+	else if(doc["com"] == "COMMAND_KPID_SET")
 		packet.com = COMMAND_KPID_SET;
-		packet.argc = 4;
-	}
+
+	else if(doc["com"] == "COMMAND_TOL_GET")
+		packet.com = COMMAND_TOL_GET;
+
+	else if(doc["com"] == "COMMAND_TOL_SET")
+		packet.com = COMMAND_TOL_SET;
+	
+	else if(doc["com"] == "COMMAND_MAX_SPEED_GET")
+		packet.com = COMMAND_MAX_SPEED_GET;
+
+	else if(doc["com"] == "COMMAND_MAX_SPEED_SET")
+		packet.com = COMMAND_MAX_SPEED_SET;
+
+	else if(doc["com"] == "COMMAND_SAVE")
+		packet.com = COMMAND_SAVE;
+
+	else if(doc["com"] == "COMMAND_LOAD")
+		packet.com = COMMAND_LOAD;
 
 	else{
-		WebSerial.println("CONTROL_INVALID_MSG");
+		//Encode error response.
+		doc.clear();
+		doc["com"] = CONTROL_INVALID_COM;
+
+		serializeJson(doc, res);
+
+		//Send JSON.
+		WebSerial.println(res);
 		return;
 	}
+
+	//Set parameters number.
+	packet.argc = doc["data"].size();
 
 	//Set parameters.
 	for(int i=0; i<packet.argc; i++)
@@ -120,8 +143,7 @@ void serialCallback(uint8_t *data, size_t len){
 	//Set parameters.
 	for(int i=0; i<packet.argc; i++)
 		doc["data"][i] = packet.argv[i];
-
-	String res;
+	
 	serializeJson(doc, res);
 
 	//Send JSON.
