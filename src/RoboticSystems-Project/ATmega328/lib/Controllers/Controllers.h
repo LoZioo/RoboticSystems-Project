@@ -45,7 +45,7 @@ class SpeedController{
 		void __to_lr_speed(float&, float&);
 
 	public:
-		//delta_t, proportional_k, integral_k, saturation_PWM, engine, encoder.
+		//delta_t, proportional_k, integral_k, max_pwm, engine, encoder.
 		SpeedController(float, float, float, uint16_t, LMD18200&, RI32&);
 		~SpeedController();
 
@@ -76,8 +76,8 @@ class PositionController{
 		float target_linear_speed, target_angular_speed;
 
 	public:
-		//delta_t, module_proportional_k, phase_proportional_k, saturation_speed, speed_controller, engine, encoder.
-		PositionController(float, float, float, float, SpeedController&);
+		//delta_t, module_proportional_k, phase_proportional_k, max_linear_speed (m/s), max_angular_speed (rad/s), speed_controller.
+		PositionController(float, float, float, float, float, SpeedController&);
 		~PositionController();
 
 		//target_x, target_y, target_theta.
@@ -89,8 +89,14 @@ class PositionController{
 		float getModuleKp()	{	return PID_module->getKp();	}
 		float getPhaseKp()	{	return PID_phase->getKp();	}
 
+		float getMaxLinearSpeed()		{	return PID_module->getSat();	}
+		float getMaxAngularSpeed()	{	return PID_phase->getSat();		}
+
 		void setModuleKp(float kp)	{	PID_module->setKp(kp);	}
 		void setPhaseKp(float kp)		{	PID_phase->setKp(kp);		}
+
+		void setMaxLinearSpeed(float sat)		{	PID_module->setSat(sat);	}
+		void setMaxAngularSpeed(float sat)	{	PID_phase->setSat(sat);		}
 };
 
 #endif
