@@ -19,13 +19,16 @@
 //Control system sampling rate (8ms -> 125Hz).
 #define DELTA_T	8e-3
 
-//Speed controller PID default values.
-#define S_KP	1000
-#define S_KI	3000
+//Number of plotted samples per second.
+#define N_SAMPLES	30
 
-//Position controller PID default values.
-#define P_MODULE_KP	1
-#define P_PHASE_KP	1
+//Position controller PID default values (now in settings_t).
+// #define P_MODULE_KP	1
+// #define P_PHASE_KP	1
+
+//Speed controller PID default values (now in settings_t).
+// #define S_KP	1000
+// #define S_KI	3000
 
 //Encoder wheel parameters.
 #define ENC_RADIUS			0.021
@@ -34,11 +37,34 @@
 
 //Locomotion wheel parameters.
 // #define LOC_RADIUS			0.0315
-// #define LOC_WHEELBASE		0.182
+// #define LOC_WHEELBASE	0.182
 
 //Robot traits.
-// #define ROB_WEIGHT						6			//Kg
-#define ROB_MAX_SPEED					0.5		//m/s
+// #define ROB_WEIGHT			6			//Kg
+// #define ROB_MAX_SPEED	0.5		//m/s
 
 // #define ROB_LIN_AIR_FRICTION	0.8
 // #define ROB_ROT_AIR_FRICTION	0.8
+
+//Tollerance errors definition (meters and degrees) (now in settings_t).
+// #define TOL_RHO		0.1	//m.
+// #define TOL_THETA	5		//deg.
+
+//EEPROM settings.
+struct settings_t{
+	//Speed controller PID constants.
+	float s_kp;
+	float s_ki;
+
+	//Position controller PID constants.
+	float p_module_kp;
+	float p_phase_kp;
+
+	//Tollerance errors definition (meters and degrees).
+	float tol_rho;
+	float tol_theta;
+
+	//Robot max speeds (m/s, rad/s).
+	float max_linear_speed;
+	float max_angular_speed;
+};
