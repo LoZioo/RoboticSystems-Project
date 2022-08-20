@@ -1,5 +1,9 @@
 #include <Arduino.h>
+#include <EEPROM.h>
+#include <NeoSWSerial.h>
+
 #include <const.h>
+#include <packet.h>
 
 #include <SerialPlotter.h>
 #include <SerialPlotter.cpp>	//Just to avoid linker errors.
@@ -8,9 +12,6 @@
 #include <RI32.h>
 #include <PID.h>
 #include <Controllers.h>
-
-#include <NeoSWSerial.h>
-#include <packet.h>
 
 //Number of plotted samples per second (debug).
 #define N_SAMPLES	30
@@ -52,6 +53,8 @@ int c = 0;
 void setup(){
 	Serial.begin(115200);
 	ss.begin(SS_SPEED);
+
+	EEPROM.begin();
 
 	motor.begin();
 	motor.start();
@@ -112,7 +115,7 @@ void loop(){
 }
 
 inline void handle_packet(){
-	packet_command_t com = packet.com;
+	packet_data_t com = packet.com;
 
 	//Default reply values.
 	packet.com = CONTROL_OK;
@@ -160,7 +163,23 @@ inline void handle_packet(){
 			packet.argv[3] = speedController.getKi();
 			break;
 		
+		case COMMAND_KPID_SAVE:
+			EEPROM.put(0, packet);
+		
+		//Continue after COMMAND_KPID_SAVE:
+		case COMMAND_KPID_LOAD:
+			EEPROM.get(0, packet);
+
+			packet.argc = 4;
+
+			packet.argv[0] = positionController.getModuleKp();
+			packet.argv[1] = positionController.getPhaseKp();
+			packet.argv[2] = speedController.getKp();
+			packet.argv[3] = speedController.getKi();
+			break;
+		
 		case CONTROL_OK:
+		case CONTROL_ERROR:
 		case CONTROL_INVALID_MSG:
 			break;
 
