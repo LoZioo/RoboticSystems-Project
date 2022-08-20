@@ -10,22 +10,27 @@
  * Definitions of the various binary data packets.
  */
 
-#include <Arduino.h>
-
 #define PACKET_ARGV_MAXLEN	4
 
-//Basic commands.
-typedef enum : uint8_t{
-	CONTROL_OK,
-	CONTROL_INVALID_MSG,
+#include <Arduino.h>
 
+//Basic commands and controls.
+typedef enum : uint8_t{
 	COMMAND_RESET,
 	COMMAND_RESET_ROUTINE,
+
 	COMMAND_POSE,
 	COMMAND_GOTO,
+
 	COMMAND_KPID_GET,
-	COMMAND_KPID_SET
-} packet_command_t;
+	COMMAND_KPID_SET,
+	COMMAND_KPID_SAVE,
+	COMMAND_KPID_LOAD,
+
+	CONTROL_OK,
+	CONTROL_ERROR,
+	CONTROL_INVALID_MSG
+} packet_data_t;
 
 /*
 	__attribute((__packed__)) is needed because we're using that
@@ -35,7 +40,7 @@ typedef enum : uint8_t{
 	be the same across any CPU architecture.
 */
 template<class T = float> struct __attribute((__packed__)) packet_t{
-	packet_command_t com;
+	packet_data_t com;
 	uint8_t argc;
 	T argv[PACKET_ARGV_MAXLEN];
 };
