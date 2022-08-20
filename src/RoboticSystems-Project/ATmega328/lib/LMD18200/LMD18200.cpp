@@ -12,9 +12,6 @@ void LMD18200::__write(uint8_t wheel, uint8_t direction, uint16_t pwm){
 			stop_left();
 
 		else{
-			if(!state_left())
-				start_left();
-
 			digitalWrite(left_direction_pin, direction);
 			OCR1A = pwm;		//Left wheel.
 		}
@@ -25,9 +22,6 @@ void LMD18200::__write(uint8_t wheel, uint8_t direction, uint16_t pwm){
 			stop_right();
 		
 		else{
-			if(!state_right())
-				start_right();
-			
 			digitalWrite(right_direction_pin, direction);
 			OCR1B = pwm;		//Right wheel.
 		}
