@@ -62,7 +62,7 @@ class LMD18200{
 		void stop_left();
 		void stop_right();
 
-		bool state()					{	return (state_left() && state_right());	}
+		bool enabled()				{	return (state_left() && state_right());	}
 		bool state_left()			{ return (TCCR1A & (1 << COM1B1)) != 0;		}
 		bool state_right()		{ return (TCCR1A & (1 << COM1A1)) != 0;		}
 };
