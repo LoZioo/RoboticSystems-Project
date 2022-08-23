@@ -53,18 +53,17 @@
 //EEPROM settings.
 struct settings_t{
 	//Speed controller PID constants.
-	float s_kp;
-	float s_ki;
+	float s_kp = 1000;
+	float s_ki = 3000;
 
 	//Position controller PID constants.
-	float p_module_kp;
-	float p_phase_kp;
+	float p_module_kp = 1;
+	float p_phase_kp = 1;
 
-	//Tollerance errors definition (meters and degrees).
-	float tol_rho;
-	float tol_theta;
+	//Tollerance errors definition (m).
+	float tol_rho = 0.1;
 
 	//Robot max speeds (m/s, rad/s).
-	float max_linear_speed;
-	float max_angular_speed;
+	float max_linear_speed = 0.5;
+	float max_angular_speed = radians(180);
 };
