@@ -35,6 +35,8 @@ class PID{
 		float evaluate(float);
 		float evaluate(float, float);
 
+		void reset()	{	integral = prev_err = in_saturation = 0;	}
+
 		float getKp()	{	return kp;	}
 		float getKi()	{	return ki;	}
 		float getKd()	{	return kd;	}
