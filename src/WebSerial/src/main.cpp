@@ -76,6 +76,9 @@ void webSerialCallback(uint8_t *data, size_t len){
 	else if(doc["com"] == "COMMAND_GOTO")
 		packet.com = COMMAND_GOTO;
 	
+	else if(doc["com"] == "COMMAND_START")
+		packet.com = COMMAND_START;
+	
 	else if(doc["com"] == "COMMAND_STOP")
 		packet.com = COMMAND_STOP;
 
