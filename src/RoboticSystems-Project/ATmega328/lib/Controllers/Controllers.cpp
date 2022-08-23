@@ -33,9 +33,6 @@ void SpeedController::evaluate(float target_v, float target_omega, bool l_r_targ
 	float target_speed_l = target_v;
 	float target_speed_r = target_omega;
 
-	//Read new data.
-	enc.evaluate();
-
 	//From speed errors to PWM.
 	PWM_l = PID_l->evaluate(target_speed_l, enc.getLeftSpeed());
 	PWM_r = PID_r->evaluate(target_speed_r, enc.getRightSpeed());
@@ -43,6 +40,13 @@ void SpeedController::evaluate(float target_v, float target_omega, bool l_r_targ
 	//Write new data.
 	motor.left(PWM_l);
 	motor.right(PWM_r);
+}
+
+void SpeedController::reset(){
+	PID_l->reset();
+	PID_r->reset();
+
+	PWM_l = PWM_r = 0;
 }
 
 //----------------------------------------- PositionController ---------------------------------------//
@@ -59,7 +63,7 @@ PositionController::~PositionController(){
 	delete PID_phase;
 }
 
-void PositionController::evaluate(float target_x, float target_y, float target_theta){
+void PositionController::evaluate(float target_x, float target_y){
 	float err_x = target_x - speedController.enc.getX();
 	float err_y = target_y - speedController.enc.getY();
 
@@ -75,4 +79,13 @@ void PositionController::evaluate(float target_x, float target_y, float target_t
 	target_angular_speed = PID_phase->evaluate(err_theta);
 
 	speedController.evaluate(target_linear_speed, target_angular_speed);
+}
+
+void PositionController::reset(){
+	PID_module->reset();
+	PID_phase->reset();
+
+	target_linear_speed = target_angular_speed = 0;
+
+	speedController.reset();
 }
