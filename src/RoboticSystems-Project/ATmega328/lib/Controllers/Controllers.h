@@ -51,6 +51,7 @@ class SpeedController{
 
 		//target_linear_speed/target_vleft, target_angular_speed/target_vright, (false = lin/ang, true = vleft/vright).
 		void evaluate(float, float, bool = false);
+		void reset();
 
 		int16_t getLeftPWM()	{	return PWM_l;	}
 		int16_t getRightPWM()	{	return PWM_r;	}
@@ -80,8 +81,9 @@ class PositionController{
 		PositionController(float, float, float, float, float, SpeedController&);
 		~PositionController();
 
-		//target_x, target_y, target_theta.
-		void evaluate(float, float, float);
+		//target_x, target_y.
+		void evaluate(float, float);
+		void reset();
 
 		float getTargetLinearSpeed()	{	return target_linear_speed;		}
 		float getTargetAngularSpeed()	{	return target_angular_speed;	}
