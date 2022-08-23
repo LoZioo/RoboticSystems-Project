@@ -46,7 +46,7 @@ class SpeedController{
 
 	public:
 		//delta_t, proportional_k, integral_k, max_pwm, engine, encoder.
-		SpeedController(float, float, float, uint16_t, LMD18200&, RI32&);
+		SpeedController(float, float&, float&, uint16_t, LMD18200&, RI32&);
 		~SpeedController();
 
 		//target_linear_speed/target_vleft, target_angular_speed/target_vright, (false = lin/ang, true = vleft/vright).
@@ -55,12 +55,6 @@ class SpeedController{
 
 		int16_t getLeftPWM()	{	return PWM_l;	}
 		int16_t getRightPWM()	{	return PWM_r;	}
-
-		float getKp()	{	return PID_l->getKp();	}
-		float getKi()	{	return PID_l->getKi();	}
-
-		void setKp(float kp)	{	PID_l->setKp(kp);	PID_r->setKp(kp);	}
-		void setKi(float ki)	{	PID_l->setKi(ki);	PID_r->setKi(ki);	}
 };
 
 class PositionController{
@@ -78,7 +72,7 @@ class PositionController{
 
 	public:
 		//delta_t, module_proportional_k, phase_proportional_k, max_linear_speed (m/s), max_angular_speed (rad/s), speed_controller.
-		PositionController(float, float, float, float, float, SpeedController&);
+		PositionController(float, float&, float&, float&, float&, SpeedController&);
 		~PositionController();
 
 		//target_x, target_y.
@@ -88,14 +82,8 @@ class PositionController{
 		float getTargetLinearSpeed()	{	return target_linear_speed;		}
 		float getTargetAngularSpeed()	{	return target_angular_speed;	}
 
-		float getModuleKp()	{	return PID_module->getKp();	}
-		float getPhaseKp()	{	return PID_phase->getKp();	}
-
 		float getMaxLinearSpeed()		{	return PID_module->getSat();	}
 		float getMaxAngularSpeed()	{	return PID_phase->getSat();		}
-
-		void setModuleKp(float kp)	{	PID_module->setKp(kp);	}
-		void setPhaseKp(float kp)		{	PID_phase->setKp(kp);		}
 
 		void setMaxLinearSpeed(float sat)		{	PID_module->setSat(sat);	}
 		void setMaxAngularSpeed(float sat)	{	PID_phase->setSat(sat);		}

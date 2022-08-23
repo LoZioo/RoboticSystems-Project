@@ -19,7 +19,7 @@ class PID{
 	private:
 		float dt;
 
-		float kp, ki, kd, sat;
+		float &kp, &ki, &kd, &sat;
 		bool anti_windup;
 
 		float integral = 0;
@@ -29,7 +29,7 @@ class PID{
 
 	public:
 		//dt, kp, ki, kd, sat, anti_windup
-		PID(float dt, float kp, float ki, float kd, float sat, bool anti_windup = false)
+		PID(float dt, float &kp, float &ki, float &kd, float &sat, bool anti_windup = false)
 			: dt(dt), kp(kp), ki(ki), kd(kd), sat(sat), anti_windup(anti_windup) {}
 
 		float evaluate(float);
@@ -37,16 +37,8 @@ class PID{
 
 		void reset()	{	integral = prev_err = in_saturation = 0;	}
 
-		float getKp()	{	return kp;	}
-		float getKi()	{	return ki;	}
-		float getKd()	{	return kd;	}
-
 		float	getSat()					{	return sat;					}
 		bool	getAntiwindup()		{	return anti_windup;	}
-
-		void setKp(float kp)	{	this->kp = kp;	}
-		void setKi(float ki)	{	this->ki = ki;	}
-		void setKd(float kd)	{	this->kd = kd;	}
 
 		void setSat(float sat)									{	this->sat = sat;									}
 		void setAntiwindup(float anti_windup)		{	this->anti_windup = anti_windup;	}

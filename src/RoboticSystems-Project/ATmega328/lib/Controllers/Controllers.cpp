@@ -13,11 +13,14 @@ void SpeedController::__to_lr_speed(float &lin_speed, float &ang_speed){
 	ang_speed = lin_speed_tmp + coeff;
 }
 
-SpeedController::SpeedController(float dt, float kp, float ki, uint16_t max_pwm, LMD18200 &motor, RI32 &enc)
+SpeedController::SpeedController(float dt, float &kp, float &ki, uint16_t max_pwm, LMD18200 &motor, RI32 &enc)
 : motor(motor), enc(enc), dt(dt){
+	//Dummy reference of a memory address.
+	float* kd = new float(0);
+	float* max_pwm_float = new float(max_pwm);
 
-	PID_l = new PID(dt, kp, ki, 0, max_pwm, true);
-	PID_r = new PID(dt, kp, ki, 0, max_pwm, true);
+	PID_l = new PID(dt, kp, ki, *kd, *max_pwm_float, true);
+	PID_r = new PID(dt, kp, ki, *kd, *max_pwm_float, true);
 }
 
 SpeedController::~SpeedController(){
@@ -51,11 +54,13 @@ void SpeedController::reset(){
 
 //----------------------------------------- PositionController ---------------------------------------//
 
-PositionController::PositionController(float dt, float module_kp, float phase_kp, float max_linear_speed, float max_angular_speed, SpeedController &speedController)
+PositionController::PositionController(float dt, float &module_kp, float &phase_kp, float &max_linear_speed, float &max_angular_speed, SpeedController &speedController)
 : speedController(speedController), dt(dt){
+	//Dummy reference of a memory address.
+	float* dummy = new float(0);
 
-	PID_module = new PID(dt, module_kp, 0, 0, max_linear_speed);
-	PID_phase = new PID(dt, phase_kp, 0, 0, max_angular_speed);
+	PID_module = new PID(dt, module_kp, *dummy, *dummy, max_linear_speed);
+	PID_phase = new PID(dt, phase_kp, *dummy, *dummy, max_angular_speed);
 }
 
 PositionController::~PositionController(){

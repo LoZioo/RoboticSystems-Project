@@ -34,7 +34,7 @@ PositionController *positionController;
 settings_t settings;
 
 // Target for the position controller.
-float	target_x = 0.5, target_y = 0.5, target_rho = hypot(target_x, target_y);
+float	target_x = 0, target_y = 0, target_rho = hypot(target_x, target_y);
 
 //Tick flag.
 volatile bool tick = false;
@@ -55,7 +55,7 @@ void setup(){
 	);
 
 	motor.begin();
-	motor.start();
+	// motor.start();
 
 	start_timer2();
 }
@@ -103,108 +103,107 @@ void loop(){
 	}
 
 	//Time to check for some serial packets.
-	// if(ss.available()){
-	// 	ss.readBytes((uint8_t*) &packet, sizeof(packet));
-	// 	handle_packet();
-	// 	ss.write((uint8_t*) &packet, sizeof(packet));
-	// }
+	if(ss.available()){
+		ss.readBytes((uint8_t*) &packet, sizeof(packet));
+		handle_packet();
+		ss.write((uint8_t*) &packet, sizeof(packet));
+	}
 }
 
-// inline void handle_packet(){
-// 	packet_data_t com = packet.com;
+inline void handle_packet(){
+	packet_data_t com = packet.com;
 
-// 	//Default reply values.
-// 	packet.com = CONTROL_OK;
-// 	packet.argc = 0;
+	//Default reply values.
+	packet.com = CONTROL_OK;
+	packet.argc = 0;
 
-// 	switch(com){		
-// 		case COMMAND_RESET:
-// 			enc.reset();
-// 			break;
+	switch(com){		
+		case COMMAND_RESET:
+			enc.reset();
+			break;
 		
-// 		case COMMAND_RESET_ROUTINE:
-// 			reset_routine();
-// 			break;
+		case COMMAND_RESET_ROUTINE:
+			reset_routine();
+			break;
 		
-// 		case COMMAND_POSE:
-// 			packet.argc = 3;
+		case COMMAND_POSE:
+			packet.argc = 3;
 
-// 			packet.argv[0] = enc.getX();
-// 			packet.argv[1] = enc.getY();
-// 			packet.argv[2] = enc.getTheta();
-// 			break;
+			packet.argv[0] = enc.getX();
+			packet.argv[1] = enc.getY();
+			packet.argv[2] = enc.getTheta();
+			break;
 		
-// 		case COMMAND_GOTO:
-// 			target_x = packet.argv[0];
-// 			target_y = packet.argv[1];
-// 			target_theta = packet.argv[2];
-// 			target_rho = hypot(target_x, target_y);
+		case COMMAND_GOTO:
+			target_x = packet.argv[0];
+			target_y = packet.argv[1];
+			target_rho = hypot(target_x, target_y);
 
-// 			//Re-enable engine.
-// 			motor.start();
-// 			break;
+			//Re-enable engine.
+			motor.start();
+			break;
 		
-// 		case COMMAND_STOP:
-// 			packet.com = COMMAND_STOP;
-// 			motor.stop();
-// 			break;
+		case COMMAND_START:
+			motor.start();
+			break;
 		
-// 		case COMMAND_KPID_SET:
-// 			positionController->setModuleKp(packet.argv[0]);
-// 			positionController->setPhaseKp(packet.argv[1]);
-// 			speedController->setKp(packet.argv[2]);
-// 			speedController->setKi(packet.argv[3]);
+		case COMMAND_STOP:
+			motor.stop();
+			break;
 		
-// 		//Continue after COMMAND_KPID_SET:
-// 		case COMMAND_KPID_GET:
-// 			packet.argc = 4;
+		case COMMAND_KPID_SET:
+			settings.p_module_kp = packet.argv[0];
+			settings.p_phase_kp = packet.argv[1];
+			settings.s_kp = packet.argv[2];
+			settings.s_ki = packet.argv[3];
+		
+		//Continue after COMMAND_KPID_SET:
+		case COMMAND_KPID_GET:
+			packet.argc = 4;
 
-// 			packet.argv[0] = positionController->getModuleKp();
-// 			packet.argv[1] = positionController->getPhaseKp();
-// 			packet.argv[2] = speedController->getKp();
-// 			packet.argv[3] = speedController->getKi();
-// 			break;
+			packet.argv[0] = settings.p_module_kp;
+			packet.argv[1] = settings.p_phase_kp;
+			packet.argv[2] = settings.s_kp;
+			packet.argv[3] = settings.s_ki;
+			break;
 		
-// 		case COMMAND_TOL_SET:
-// 			settings.tol_rho = packet.argv[0];
-// 			settings.tol_theta = packet.argv[1];
+		case COMMAND_TOL_SET:
+			settings.tol_rho = packet.argv[0];
+				
+		case COMMAND_TOL_GET:
+			packet.argc = 1;
+			packet.argv[0] = settings.tol_rho;
+			break;
 		
-// 		case COMMAND_TOL_GET:
-// 			packet.argc = 2;
+		case COMMAND_MAX_SPEED_SET:
+			positionController->setMaxLinearSpeed(packet.argv[0]);
+			positionController->setMaxAngularSpeed(packet.argv[1]);
 
-// 			packet.argv[0] = settings.tol_rho;
-// 			packet.argv[1] = settings.tol_theta;
-// 			break;
-		
-// 		case COMMAND_MAX_SPEED_SET:
-// 			positionController->setMaxLinearSpeed(packet.argv[0]);
-// 			positionController->setMaxAngularSpeed(packet.argv[1]);
+		case COMMAND_MAX_SPEED_GET:
+			packet.argc = 2;
 
-// 		case COMMAND_MAX_SPEED_GET:
-// 			packet.argc = 2;
+			packet.argv[0] = positionController->getMaxLinearSpeed();
+			packet.argv[1] = positionController->getMaxAngularSpeed();
+			break;
+		
+		case COMMAND_SAVE:
+			EEPROM_save();
+			break;
+		
+		case COMMAND_LOAD:
+			EEPROM_load();
+			break;
+		
+		case CONTROL_OK:
+		case CONTROL_ERROR:
+		case CONTROL_INVALID_COM:
+			break;
 
-// 			packet.argv[0] = positionController->getMaxLinearSpeed();
-// 			packet.argv[1] = positionController->getMaxAngularSpeed();
-// 			break;
-		
-// 		case COMMAND_SAVE:
-// 			EEPROM_save();
-// 			break;
-		
-// 		case COMMAND_LOAD:
-// 			EEPROM_load();
-// 			break;
-		
-// 		case CONTROL_OK:
-// 		case CONTROL_ERROR:
-// 		case CONTROL_INVALID_COM:
-// 			break;
-
-// 		default:
-// 			packet.com = CONTROL_INVALID_COM;
-// 			break;
-// 	}
-// }
+		default:
+			packet.com = CONTROL_INVALID_COM;
+			break;
+	}
+}
 
 inline void reset_routine(){
 	//SCRIVERE!
@@ -212,25 +211,9 @@ inline void reset_routine(){
 
 inline void EEPROM_load(){
 	EEPROM.get(0, settings);
-
-	positionController->setModuleKp(settings.p_module_kp);
-	positionController->setPhaseKp(settings.p_phase_kp);
-	speedController->setKp(settings.s_kp);
-	speedController->setKi(settings.s_ki);
-
-	positionController->setMaxLinearSpeed(settings.max_linear_speed);
-	positionController->setMaxAngularSpeed(settings.max_angular_speed);
 }
 
 inline void EEPROM_save(){
-	settings.p_module_kp = positionController->getModuleKp();
-	settings.p_phase_kp = positionController->getPhaseKp();
-	settings.s_kp = speedController->getKp();
-	settings.s_ki = speedController->getKi();
-
-	settings.max_linear_speed = positionController->getMaxLinearSpeed();
-	settings.max_angular_speed = positionController->getMaxAngularSpeed();
-
 	EEPROM.put(0, settings);
 }
 
