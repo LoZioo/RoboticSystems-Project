@@ -6,15 +6,16 @@
 |	`COMMAND_RESET`	|	N/A	|	N/A	|	Set the zero of the ortogonal system in the current point of the 2D space.	|
 |	`COMMAND_RESET_ROUTINE`	|	N/A	|	N/A	|	Execute the automatic reset routine by using the two front switches.	|
 |	`COMMAND_POSE`	|	N/A	|	&lt;x, y, theta&gt;	|	Get the pose of the robot.	|
-|	`COMMAND_GOTO`	|	&lt;x, y, theta&gt;	|	N/A	|	Go to the &lt;x, y&gt; point and keep the orientation angle at &lt;theta&gt; radiands.	|
-|	`COMMAND_STOP`	|	N/A	|	N/A	|	Stop engine.	|
+|	`COMMAND_GOTO`	|	&lt;x, y&gt;	|	N/A	|	Go to the &lt;x, y&gt; point.	|
+|	`COMMAND_START\|STOP`	|	N/A	|	N/A	|	Start \| Stop engine.	|
 |	`COMMAND_KPID_GET\|SET`	|	N/A \| &lt;p_module_kp, p_phase_kp, s_kp, s_ki&gt;	|	&lt;p_module_kp, p_phase_kp, s_kp, s_ki&gt;	|	Get \| Set the various PID constants.	|
-|	`COMMAND_TOL_RHO_GET\|SET`	|	N/A \| &lt;tol_rho&gt;	|	&lt;tol_rho&gt;	|	Get \| Set the distance tollerance.	|
-|	`COMMAND_TOL_THETA_GET\|SET`	|	N/A \| &lt;tol_theta&gt;	|	&lt;tol_theta&gt;	|	Get \| Set the angle tollerance.	|
+|	`COMMAND_TOL_GET\|SET`	|	N/A \| &lt;tol_rho&gt;	|	&lt;tol_rho&gt;	|	Get \| Set the distance tollerance (m).	|
 |	`COMMAND_MAX_SPEED_GET\|SET`	|	N/A \| &lt;max_linear_speed, max_angular_speed&gt;	|	&lt;max_linear_speed, max_angular_speed&gt;	|	Get \| Set robot maximum speeds (m/s, rad/s).	|
 |	`COMMAND_LOAD\|SAVE`	|	N/A	|	N/A	|	Load \| Save current settings from \| to EEPROM.	|
 
 **NB**:	Every command returns `CONTROL_OK` if it's accomplished correctly.
+
+**NBB**:	Every angle is measured in radians by default.
 
 ## Control codes
 
