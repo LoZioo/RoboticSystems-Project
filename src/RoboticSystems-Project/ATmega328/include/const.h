@@ -22,14 +22,6 @@
 //Number of plotted samples per second.
 #define N_SAMPLES	30
 
-//Position controller PID default values (now in settings_t).
-// #define P_MODULE_KP	1
-// #define P_PHASE_KP	1
-
-//Speed controller PID default values (now in settings_t).
-// #define S_KP	1000
-// #define S_KI	3000
-
 //Encoder wheel parameters.
 #define ENC_RADIUS			0.021
 #define ENC_TICKS				1000
@@ -41,16 +33,11 @@
 
 //Robot traits.
 // #define ROB_WEIGHT			6			//Kg
-// #define ROB_MAX_SPEED	0.5		//m/s
 
 // #define ROB_LIN_AIR_FRICTION	0.8
 // #define ROB_ROT_AIR_FRICTION	0.8
 
-//Tollerance errors definition (meters and degrees) (now in settings_t).
-// #define TOL_RHO		0.1	//m.
-// #define TOL_THETA	5		//deg.
-
-//EEPROM settings.
+//EEPROM settings (default values are for testing).
 struct settings_t{
 	//Speed controller PID constants.
 	float s_kp = 1000;
