@@ -34,8 +34,7 @@ PositionController *positionController;
 settings_t settings;
 
 // Target for the position controller.
-float	target_x = 0, target_y = 0, target_theta = 0;		//m, m, deg.
-float target_rho = hypot(target_x, target_y);					//m.
+float	target_x = 0.5, target_y = 0.5, target_rho = hypot(target_x, target_y);
 
 //Tick flag.
 volatile bool tick = false;
@@ -65,146 +64,147 @@ void loop(){
 	//Interrupt occurred.
 	if(tick){
 		tick = false;
-		positionController->evaluate(target_x, target_y, radians(target_theta));
+
+		//Read new data.
+		enc.evaluate();
+
+		if(motor.enabled())
+			//Main engine controller.
+			positionController->evaluate(target_x, target_y);
 
 		//Tollerance check.
 		if(
-			(
-				enc.getRho() > target_rho - settings.tol_rho &&
-				enc.getRho() < target_rho + settings.tol_theta
-			) && (
-				enc.getTheta() > normalize_angle(radians(target_theta) - radians(settings.tol_theta)) &&
-				enc.getTheta() < normalize_angle(radians(target_theta) + radians(settings.tol_theta))
-			)
+			enc.getRho() > target_rho - settings.tol_rho &&
+			enc.getRho() < target_rho + settings.tol_rho
 		){
 			//Stop engine (but continue evaluating the encoder position).
 			motor.stop();
+			positionController->reset();
 		}
 
 		if(c++ == int(1 / (N_SAMPLES * DELTA_T))){
 			c = 0;
 			plotter.start();
-			plotter.add(freeMemory());
 			
-			plotter.add(enc.getRho() * 1000);
-			plotter.add(enc.getTheta(true));
-
-			plotter.add(target_rho * 1000);
-			plotter.add(target_theta);
-
 			plotter.add(enc.getX() * 1000);
 			plotter.add(enc.getY() * 1000);
+			
+			plotter.add(enc.getRho() * 1000);
+			plotter.add(target_rho * 1000);
 
 			plotter.add(speedController->getLeftPWM());
 			plotter.add(speedController->getRightPWM());
+
+			plotter.add(positionController->getTargetLinearSpeed());
+			plotter.add(positionController->getTargetAngularSpeed());
 			
 			plotter.plot();
 		}
 	}
 
 	//Time to check for some serial packets.
-	if(ss.available()){
-		ss.readBytes((uint8_t*) &packet, sizeof(packet));
-		handle_packet();
-		ss.write((uint8_t*) &packet, sizeof(packet));
-	}
+	// if(ss.available()){
+	// 	ss.readBytes((uint8_t*) &packet, sizeof(packet));
+	// 	handle_packet();
+	// 	ss.write((uint8_t*) &packet, sizeof(packet));
+	// }
 }
 
-inline void handle_packet(){
-	packet_data_t com = packet.com;
+// inline void handle_packet(){
+// 	packet_data_t com = packet.com;
 
-	//Default reply values.
-	packet.com = CONTROL_OK;
-	packet.argc = 0;
+// 	//Default reply values.
+// 	packet.com = CONTROL_OK;
+// 	packet.argc = 0;
 
-	switch(com){		
-		case COMMAND_RESET:
-			enc.reset();
-			break;
+// 	switch(com){		
+// 		case COMMAND_RESET:
+// 			enc.reset();
+// 			break;
 		
-		case COMMAND_RESET_ROUTINE:
-			reset_routine();
-			break;
+// 		case COMMAND_RESET_ROUTINE:
+// 			reset_routine();
+// 			break;
 		
-		case COMMAND_POSE:
-			packet.argc = 3;
+// 		case COMMAND_POSE:
+// 			packet.argc = 3;
 
-			packet.argv[0] = enc.getX();
-			packet.argv[1] = enc.getY();
-			packet.argv[2] = enc.getTheta();
-			break;
+// 			packet.argv[0] = enc.getX();
+// 			packet.argv[1] = enc.getY();
+// 			packet.argv[2] = enc.getTheta();
+// 			break;
 		
-		case COMMAND_GOTO:
-			target_x = packet.argv[0];
-			target_y = packet.argv[1];
-			target_theta = packet.argv[2];
-			target_rho = hypot(target_x, target_y);
+// 		case COMMAND_GOTO:
+// 			target_x = packet.argv[0];
+// 			target_y = packet.argv[1];
+// 			target_theta = packet.argv[2];
+// 			target_rho = hypot(target_x, target_y);
 
-			//Re-enable engine.
-			motor.start();
-			break;
+// 			//Re-enable engine.
+// 			motor.start();
+// 			break;
 		
-		case COMMAND_STOP:
-			packet.com = COMMAND_STOP;
-			motor.stop();
-			break;
+// 		case COMMAND_STOP:
+// 			packet.com = COMMAND_STOP;
+// 			motor.stop();
+// 			break;
 		
-		case COMMAND_KPID_SET:
-			positionController->setModuleKp(packet.argv[0]);
-			positionController->setPhaseKp(packet.argv[1]);
-			speedController->setKp(packet.argv[2]);
-			speedController->setKi(packet.argv[3]);
+// 		case COMMAND_KPID_SET:
+// 			positionController->setModuleKp(packet.argv[0]);
+// 			positionController->setPhaseKp(packet.argv[1]);
+// 			speedController->setKp(packet.argv[2]);
+// 			speedController->setKi(packet.argv[3]);
 		
-		//Continue after COMMAND_KPID_SET:
-		case COMMAND_KPID_GET:
-			packet.argc = 4;
+// 		//Continue after COMMAND_KPID_SET:
+// 		case COMMAND_KPID_GET:
+// 			packet.argc = 4;
 
-			packet.argv[0] = positionController->getModuleKp();
-			packet.argv[1] = positionController->getPhaseKp();
-			packet.argv[2] = speedController->getKp();
-			packet.argv[3] = speedController->getKi();
-			break;
+// 			packet.argv[0] = positionController->getModuleKp();
+// 			packet.argv[1] = positionController->getPhaseKp();
+// 			packet.argv[2] = speedController->getKp();
+// 			packet.argv[3] = speedController->getKi();
+// 			break;
 		
-		case COMMAND_TOL_SET:
-			settings.tol_rho = packet.argv[0];
-			settings.tol_theta = packet.argv[1];
+// 		case COMMAND_TOL_SET:
+// 			settings.tol_rho = packet.argv[0];
+// 			settings.tol_theta = packet.argv[1];
 		
-		case COMMAND_TOL_GET:
-			packet.argc = 2;
+// 		case COMMAND_TOL_GET:
+// 			packet.argc = 2;
 
-			packet.argv[0] = settings.tol_rho;
-			packet.argv[1] = settings.tol_theta;
-			break;
+// 			packet.argv[0] = settings.tol_rho;
+// 			packet.argv[1] = settings.tol_theta;
+// 			break;
 		
-		case COMMAND_MAX_SPEED_SET:
-			positionController->setMaxLinearSpeed(packet.argv[0]);
-			positionController->setMaxAngularSpeed(packet.argv[1]);
+// 		case COMMAND_MAX_SPEED_SET:
+// 			positionController->setMaxLinearSpeed(packet.argv[0]);
+// 			positionController->setMaxAngularSpeed(packet.argv[1]);
 
-		case COMMAND_MAX_SPEED_GET:
-			packet.argc = 2;
+// 		case COMMAND_MAX_SPEED_GET:
+// 			packet.argc = 2;
 
-			packet.argv[0] = positionController->getMaxLinearSpeed();
-			packet.argv[1] = positionController->getMaxAngularSpeed();
-			break;
+// 			packet.argv[0] = positionController->getMaxLinearSpeed();
+// 			packet.argv[1] = positionController->getMaxAngularSpeed();
+// 			break;
 		
-		case COMMAND_SAVE:
-			EEPROM_save();
-			break;
+// 		case COMMAND_SAVE:
+// 			EEPROM_save();
+// 			break;
 		
-		case COMMAND_LOAD:
-			EEPROM_load();
-			break;
+// 		case COMMAND_LOAD:
+// 			EEPROM_load();
+// 			break;
 		
-		case CONTROL_OK:
-		case CONTROL_ERROR:
-		case CONTROL_INVALID_COM:
-			break;
+// 		case CONTROL_OK:
+// 		case CONTROL_ERROR:
+// 		case CONTROL_INVALID_COM:
+// 			break;
 
-		default:
-			packet.com = CONTROL_INVALID_COM;
-			break;
-	}
-}
+// 		default:
+// 			packet.com = CONTROL_INVALID_COM;
+// 			break;
+// 	}
+// }
 
 inline void reset_routine(){
 	//SCRIVERE!
