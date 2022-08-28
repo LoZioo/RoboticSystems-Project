@@ -1,3 +1,15 @@
+/**
+ * @file main.cpp
+ * @author Davide Scalisi
+ * @brief 
+ * @version 1.0
+ * @date 2022-08-28
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ * Main control loop of the cart.
+ */
+
 #include <Arduino.h>
 #include <EEPROM.h>
 #include <NeoSWSerial.h>
@@ -5,13 +17,13 @@
 #include <const.h>
 #include <packet.h>
 
-#include <SerialPlotter.h>
-#include <SerialPlotter.cpp>	//Just to avoid linker errors.
-
 #include <LMD18200.h>
 #include <RI32.h>
 #include <PID.h>
 #include <Controllers.h>
+
+#include <SerialPlotter.h>
+#include <SerialPlotter.cpp>	//Just to avoid linker errors.
 
 inline void handle_packet(), reset_routine(), EEPROM_load(), EEPROM_save(), start_timer2(), stop_timer2();
 
@@ -55,7 +67,6 @@ void setup(){
 	);
 
 	motor.begin();
-	// motor.start();
 
 	start_timer2();
 }
@@ -206,7 +217,7 @@ inline void handle_packet(){
 }
 
 inline void reset_routine(){
-	//SCRIVERE!
+	//Reset routine with switches (unused).
 }
 
 inline void EEPROM_load(){
@@ -217,7 +228,7 @@ inline void EEPROM_save(){
 	EEPROM.put(0, settings);
 }
 
-//125Hz sampling rate.
+//Timer2 configurations: 125Hz sampling rate.
 #define TCNT2_OFFSET 125
 
 inline void start_timer2(){

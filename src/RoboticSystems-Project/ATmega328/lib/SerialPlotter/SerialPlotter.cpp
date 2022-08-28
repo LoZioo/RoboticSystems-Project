@@ -21,9 +21,5 @@ void SerialPlotter<T>::plot(){
 
 		data.payload_length = sp * sizeof(T);
 		serial.write((uint8_t*) &data, sizeof(SerialPlotter_frame_t));
-
-		// char str[100];
-		// sprintf(str, "%d * %d = %d", sp, sizeof(T), data.payload_length);
-		// serial.println(str);
 	}
 }

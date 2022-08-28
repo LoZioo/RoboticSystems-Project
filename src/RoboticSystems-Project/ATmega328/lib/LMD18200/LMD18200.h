@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2022
  * 
  * This library uses the ATmega328 Timer1 to provide
- * the control of two LMD18200 H-bridge driver. 
+ * the control of two LMD18200 H-bridge driver.
  */
 
 #ifndef LMD18200_H
