@@ -2,7 +2,6 @@
 
 #include <WiFi.h>
 #include <AsyncTCP.h>
-
 #include <ESPAsyncWebServer.h>
 #include <AsyncElegantOTA.h>
 #include <WebSerial.h>
@@ -20,18 +19,18 @@ DynamicJsonDocument doc(1024);
 packet_t<> packet;
 
 void setup(){
-	Serial2.begin(9600);
+	Serial.begin(9600);
 
-	pinMode(LED_BUILTIN, OUTPUT);
+	// pinMode(LED_BUILTIN, OUTPUT);
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(STA_SSID, STA_PSK);
 
   while(WiFi.status() != WL_CONNECTED){
-		digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+		// digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
 		delay(500);
 	}
-	digitalWrite(LED_BUILTIN, HIGH);
+	// digitalWrite(LED_BUILTIN, HIGH);
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *req){
 		String res;
@@ -51,6 +50,7 @@ void setup(){
 
   AsyncElegantOTA.begin(&server);
 	WebSerial.begin(&server);
+	
   server.begin();
 }
 
@@ -126,18 +126,18 @@ void webSerialCallback(uint8_t *data, size_t len){
 		packet.argv[i] = doc["data"][i];
 
 	//Flush incoming bytes.
-	while(Serial2.available())
-		Serial2.read();
+	while(Serial.available())
+		Serial.read();
 	
 	//Send request.
-	Serial2.write((uint8_t*) &packet, sizeof(packet));
+	Serial.write((uint8_t*) &packet, sizeof(packet));
 
 	//Wait response.
-	while(!Serial2.available())
+	while(!Serial.available())
 		asm("nop");
 	
 	//Read response.
-	Serial2.readBytes((uint8_t*) &packet, sizeof(packet));
+	Serial.readBytes((uint8_t*) &packet, sizeof(packet));
 
 	//Encode response.
 	doc.clear();
