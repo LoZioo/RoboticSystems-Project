@@ -4,6 +4,6 @@
 -	Fare Readme di tutte le librerie.
 -	Rivedere file README di RI32.
 -	Tarare tutti i PID.
+-	Mettere nel brief la descrizione delle librerie.
 
 ## ESP32
--	Fixare __updateAdjVertex, cioè il set/clear degli archi del grafo.

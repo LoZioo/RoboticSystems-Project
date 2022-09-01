@@ -7,6 +7,7 @@
 |	`COMMAND_RESET_ROUTINE`	|	N/A	|	N/A	|	Execute the automatic reset routine by using the two front switches.	|
 |	`COMMAND_POSE`	|	N/A	|	&lt;x, y, theta&gt;	|	Get the pose of the robot.	|
 |	`COMMAND_GOTO`	|	&lt;x, y&gt;	|	N/A	|	Go to the &lt;x, y&gt; point.	|
+|	`COMMAND_WAIT_XY_ARRAY`	|	&lt;len&gt;	|	N/A	|	Await for an array of &lt;x, y&gt; points (floats) of length &lt;len&gt;.	|
 |	`COMMAND_START\|STOP`	|	N/A	|	N/A	|	Start \| Stop engine.	|
 |	`COMMAND_KPID_GET\|SET`	|	N/A \| &lt;p_module_kp, p_phase_kp, s_kp, s_ki&gt;	|	&lt;p_module_kp, p_phase_kp, s_kp, s_ki&gt;	|	Get \| Set the various PID constants.	|
 |	`COMMAND_TOL_GET\|SET`	|	N/A \| &lt;tol_rho&gt;	|	&lt;tol_rho&gt;	|	Get \| Set the distance tollerance (m).	|
