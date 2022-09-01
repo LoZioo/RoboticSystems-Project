@@ -25,7 +25,10 @@
 #include <SerialPlotter.h>
 #include <SerialPlotter.cpp>	//Just to avoid linker errors.
 
-inline void handle_packet(), reset_routine(), EEPROM_load(), EEPROM_save(), start_timer2(), stop_timer2();
+inline void handle_packet(), reset_routine(), handle_xy_array(), EEPROM_load(), EEPROM_save(), start_timer2(), stop_timer2();
+
+//Serial used for debug.
+#define SERIAL_DEBUG false
 
 //Serial plotter.
 SerialPlotter<float> plotter(Serial);
@@ -45,14 +48,23 @@ PositionController *positionController;
 //Current settings (loaded from EEPROM).
 settings_t settings;
 
+//xy point buffer (loaded from ss).
+xy_t *xy_buf = new xy_t[1];
+uint8_t xy_i = 0, xy_len = 0;
+
+float target_rho = 0;		//hypot(target_x, target_y);
+
 // Target for the position controller.
-float	target_x = 0, target_y = 0, target_rho = hypot(target_x, target_y);
+// float	target_x = 0, target_y = 0, target_rho = hypot(target_x, target_y);
 
 //Tick flag.
 volatile bool tick = false;
 
 //Tick counter (used to plot data periodically).
 int c = 0;
+
+//Temp byte buffer.
+int tmp;
 
 void setup(){
 	Serial.begin(115200);
@@ -67,7 +79,6 @@ void setup(){
 	);
 
 	motor.begin();
-
 	start_timer2();
 }
 
@@ -81,19 +92,33 @@ void loop(){
 
 		if(motor.enabled())
 			//Main engine controller.
-			positionController->evaluate(target_x, target_y);
+			positionController->evaluate(xy_buf[xy_i].x, xy_buf[xy_i].y);
 
 		//Tollerance check.
 		if(
 			enc.getRho() > target_rho - settings.tol_rho &&
 			enc.getRho() < target_rho + settings.tol_rho
 		){
-			//Stop engine (but continue evaluating the encoder position).
-			motor.stop();
-			positionController->reset();
+			if(xy_i < xy_len - 1){
+				xy_i++;
+				target_rho = hypot(xy_buf[xy_i].x, xy_buf[xy_i].y);
+			}
+			
+			else{	
+				//Stop engine (but continue evaluating the encoder position).
+				motor.stop();
+				positionController->reset();
+
+				//Clear target.
+				xy_i = 0;
+				
+				xy_buf[xy_i].x = 0;
+				xy_buf[xy_i].y = 0;
+				target_rho = 0;
+			}
 		}
 
-		if(c++ == int(1 / (N_SAMPLES * DELTA_T))){
+		if(!SERIAL_DEBUG && c++ == int(1 / (N_SAMPLES * DELTA_T))){
 			c = 0;
 			plotter.start();
 			
@@ -108,13 +133,16 @@ void loop(){
 
 			plotter.add(positionController->getTargetLinearSpeed());
 			plotter.add(positionController->getTargetAngularSpeed());
+
+			plotter.add(xy_buf[xy_i].x * 1000);
+			plotter.add(xy_buf[xy_i].y * 1000);
 			
 			plotter.plot();
 		}
 	}
 
 	//Time to check for some serial packets.
-	if(ss.available()){
+	if((tmp = ss.read()) == PACKET_PAYLOAD){
 		ss.readBytes((uint8_t*) &packet, sizeof(packet));
 		handle_packet();
 		ss.write((uint8_t*) &packet, sizeof(packet));
@@ -146,11 +174,24 @@ inline void handle_packet(){
 			break;
 		
 		case COMMAND_GOTO:
-			target_x = packet.argv[0];
-			target_y = packet.argv[1];
-			target_rho = hypot(target_x, target_y);
+			if(xy_buf != NULL)
+				delete[] xy_buf;
+			
+			xy_buf = new xy_t[1];
+			xy_len = 1;
+
+			xy_buf[0].x = packet.argv[0];
+			xy_buf[0].y = packet.argv[1];
+			target_rho = hypot(xy_buf[0].x, xy_buf[0].y);
 
 			//Re-enable engine.
+			motor.start();
+			break;
+		
+		case COMMAND_WAIT_XY_ARRAY:
+			xy_len = packet.argv[0];
+			handle_xy_array();
+
 			motor.start();
 			break;
 		
@@ -218,6 +259,27 @@ inline void handle_packet(){
 
 inline void reset_routine(){
 	//Reset routine with switches (unused).
+}
+
+inline void handle_xy_array(){
+	//Delete xy_buf if it was previously allocated.
+	if(xy_buf != NULL)
+		delete[] xy_buf;
+
+	//Initialize xy_buf before the data store.
+	xy_buf = new xy_t[xy_len];
+	ss.readBytes((uint8_t*) xy_buf, xy_len * sizeof(xy_t));
+
+	target_rho = hypot(xy_buf[0].x, xy_buf[0].y);
+
+	// for(int i=0; i<xy_len; i++){
+	// 	Serial.print("(");
+	// 	Serial.print(xy_buf[i].x);
+	// 	Serial.print(", ");
+	// 	Serial.print(xy_buf[i].y);
+	// 	Serial.print(")");
+	// 	Serial.println();
+	// }
 }
 
 inline void EEPROM_load(){
