@@ -23,6 +23,7 @@ typedef enum : uint8_t{
 
 	COMMAND_POSE,
 	COMMAND_GOTO,
+	COMMAND_WAIT_XY_ARRAY,
 
 	COMMAND_START,
 	COMMAND_STOP,
@@ -42,6 +43,8 @@ typedef enum : uint8_t{
 
 #define PACKET_ARGV_MAXLEN	4
 
+const uint8_t PACKET_PAYLOAD = 0xAA;		//Up to 0xAA commands (170).
+
 /*
 	__attribute((__packed__)) is needed because we're using that
 	struct to communicate with a different CPU arcitecture.
@@ -54,4 +57,9 @@ template<class T = float> struct __attribute((__packed__)) packet_t{
 
 	uint8_t argc;
 	T argv[PACKET_ARGV_MAXLEN];
+};
+
+struct __attribute((__packed__)) xy_t{
+	float x = 0;
+	float y = 0;
 };
