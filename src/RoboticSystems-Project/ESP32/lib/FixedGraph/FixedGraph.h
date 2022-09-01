@@ -1,3 +1,15 @@
+/**
+ * @file FixedGraph.h
+ * @author Davide Scalisi, Luigi Seminara
+ * @brief Implementation of the fixed graph algorithm
+ * 				using Dijkstra as shortest path algorithm.
+ * 
+ * @version 0.1
+ * @date 2022-09-01
+ * 
+ * @copyright Copyright (c) 2022
+ */
+
 #ifndef FIXED_GRAPH_H
 #define FIXED_GRAPH_H
 
