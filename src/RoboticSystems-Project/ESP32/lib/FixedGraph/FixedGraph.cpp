@@ -10,8 +10,14 @@ void FixedGraph::__addEdge(float x, float y, int node, int val){
 void FixedGraph::__updateAdjVertex(float x, float y, int val){
 	parents_ready = false;
 	
-	int node = points[__roundPointCoordinates(x, y)];
+	int node = -1;
+	std::pair<float, float> xy = __roundPointCoordinates(x, y);
+
+	if(points.find(xy) != points.end())
+		node = points[xy];
 	
+	else return;
+
 	/**
 	 * @brief Set left edge
 	 * 

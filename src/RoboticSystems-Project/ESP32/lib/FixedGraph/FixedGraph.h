@@ -20,11 +20,11 @@
 #include <limits.h>
 #include <math.h>
 
-//Bottom-right point: (1.5, 1.5).
-#define FIXED_GRAPH_WIDTH	16
+//Bottom-right point: (1.8, 1.8).
+#define FIXED_GRAPH_WIDTH	10
 #define FIXED_GRAPH_SIZE	(FIXED_GRAPH_WIDTH * FIXED_GRAPH_WIDTH)
 
-#define FIXED_GRAPH_STEP	0.1
+#define FIXED_GRAPH_STEP	0.2
 #define FIXED_GRAPH_TOL		100
 
 //Border x and y.
