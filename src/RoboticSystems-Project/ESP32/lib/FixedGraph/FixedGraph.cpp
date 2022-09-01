@@ -8,6 +8,8 @@ void FixedGraph::__addEdge(float x, float y, int node, int val){
 }
 
 void FixedGraph::__updateAdjVertex(float x, float y, int val){
+	parents_ready = false;
+	
 	int node = -1;
 
 	if(points.find(std::pair<float, float>(x, y)) != points.end())
