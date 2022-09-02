@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="it">
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="/css/ui.css">
+		<link rel="stylesheet" href="/css/index.css">
+
+		<script src="/js/jquery-3.6.0.js"></script>
+		<script src="/js/ui.js"></script>
+		<script src="/js/index.js"></script>
+
+		<title> Configurazioni robot </title>
+	</head>
+
+	<body>
+		<div class="container">
+			<h1 class="title"> Configurazioni </h1>
+
+			<div class="utility_buttons">
+				<div class="button" id="soft_reset"> Soft reset </div>
+				<div class="button" id="ota_update"> OTA </div>
+				<div class="button" id="settings_download"> Settings.bin </div>
+			</div>
+
+			<div class="configs">
+				<h3 style="grid-area: title;"> Comandi generici </h3>
+
+				<div style="grid-area: commands;">
+					<select id="configs_commands">
+						<!-- See packet.h for the effective values. -->
+						<option value="3"> RESET </option>
+						<option value="4"> RESET_ROUTINE </option>
+						<option value="5"> POSE </option>
+						<option value="6" selected> GOTO </option>
+						<option value="8"> START </option>
+						<option value="9"> STOP </option>
+						<option value="10"> KPID_GET </option>
+						<option value="11"> KPID_SET </option>
+						<option value="12"> TOL_GET </option>
+						<option value="13"> TOL_SET </option>
+						<option value="14"> MAX_SPEED_GET </option>
+						<option value="15"> MAX_SPEED_SET </option>
+						<option value="16"> LOAD </option>
+						<option value="17"> SAVE </option>
+					</select>
+				</div>
+
+				<div class="key" style="grid-area: first-arg-key;">
+					<h3>Arg 1: </h3>
+				</div>
+
+				<div class="val" style="grid-area: first-arg-val;">
+					<input type="text" id="arg_0">
+				</div>
+
+				<div class="key" style="grid-area: second-arg-key;">
+					<h3>Arg 2: </h3>
+				</div>
+
+				<div class="val" style="grid-area: second-arg-val;">
+					<input type="text" id="arg_1">
+				</div>
+
+				<div class="key" style="grid-area: third-arg-key;">
+					<h3>Arg 3: </h3>
+				</div>
+
+				<div class="val" style="grid-area: third-arg-val;">
+					<input type="text" id="arg_2">
+				</div>
+
+				<div class="key" style="grid-area: fourth-arg-key;">
+					<h3>Arg 4: </h3>
+				</div>
+
+				<div class="val" style="grid-area: fourth-arg-val;">
+					<input type="text" id="arg_3">
+				</div>
+
+				<div style="grid-area: reset;">
+					<div class="button" id="configs_reset"> Reset </div>
+				</div>
+
+				<div style="grid-area: submit;">
+					<div class="button" id="configs_submit"> Invia comando </div>
+				</div>
+			</div>
+
+			<div class="fixed_graph">
+				<h3 style="grid-area: title;"> Fixed Graph </h3>
+
+				<div class="val" style="grid-area: x-val;">
+					<input type="text" id="x_val" placeholder="x">
+				</div>
+
+				<div class="val" style="grid-area: y-val;">
+					<input type="text" id="y_val" placeholder="y">
+				</div>
+
+				<div style="grid-area: remove-obstacle-submit;">
+					<div class="button" id="remove_obstacle_submit"> Ostacolo-- </div>
+				</div>
+
+				<div style="grid-area: add-obstacle-submit;">
+					<div class="button" id="add_obstacle_submit"> Ostacolo++ </div>
+				</div>
+
+				<div style="grid-area: exec-route-submit;">
+					<div class="button" id="exec_route_submit"> Vai al punto specificato </div>
+				</div>
+			</div>
+
+			<div class="wifi_data">
+				<h3 style="grid-area: title;"> Configurazione WiFi </h3>
+
+				<div class="key" style="grid-area: ssid-key;">
+					<h3>SSID: </h3>
+				</div>
+	
+				<div class="val" style="grid-area: ssid-val;">
+					<input type="text" id="wifi_ssid">
+				</div>
+	
+				<div class="key" style="grid-area: pass-key;">
+					<h3>Password: </h3>
+				</div>
+	
+				<div class="val" style="grid-area: pass-val;">
+					<input type="password" id="wifi_pass">
+				</div>
+				
+				<div style="grid-area: reset;">
+					<div class="button" id="wifi_reset"> Reset </div>
+				</div>
+	
+				<div style="grid-area: submit;">
+					<div class="button" id="wifi_submit"> Connetti </div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

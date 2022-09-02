@@ -1,0 +1,142 @@
+:root{
+	--background:			#EEEEEE;
+	--foreground:			gainsboro;
+
+	--main:						#ca0011;
+	--menu:						#333333;
+	--menu_selected:	#444444;
+
+	--button:					#ECEEEF;
+	--border:					#DADADB;
+
+	--primary_font:		#393939;
+	--secondary_font:	#444444;
+
+	--lcd_border:	#30302F;
+	--lcd_screen:	#87AD34;
+	--lcd_color:	#000000;
+}
+
+body{
+	background-color: var(--background);
+	
+	font-family: sans-serif;
+
+	user-select: none;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-o-user-select: none;
+}
+
+.container{
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+
+	padding: 2rem;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	gap: 2rem;
+}
+
+.container>.title{
+	text-align: center;
+	margin: 0;
+}
+
+.configs, .fixed_graph, .wifi_data{
+	border: 10px solid var(--lcd_border);
+	border-radius: 10px;
+	padding: 10px;
+}
+
+.utility_buttons{
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.configs{
+	background-color: var(--foreground);
+
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	grid-template-rows: repeat(6, 2rem);
+	gap: 6px 0;
+	grid-template-areas:
+		"title title"
+		"commands commands"
+		"first-arg-key first-arg-val"
+		"second-arg-key second-arg-val"
+		"third-arg-key third-arg-val"
+		"fourth-arg-key fourth-arg-val"
+		"reset submit"
+	;
+}
+
+.fixed_graph{
+	background-color: var(--foreground);
+
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	grid-template-rows: repeat(4, 2rem);
+	gap: 6px 0;
+	grid-template-areas:
+		"title title"
+		"x-val y-val"
+		"remove-obstacle-submit add-obstacle-submit"
+		"exec-route-submit exec-route-submit"
+	;
+}
+
+.wifi_data{
+	background-color: var(--lcd_screen);
+
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	grid-template-rows: repeat(3, 2rem);
+	gap: 6px 0;
+	grid-template-areas:
+		"title title"
+		"ssid-key ssid-val"
+		"pass-key pass-val"
+		"reset submit"
+	;
+}
+
+.configs>div, .fixed_graph>div, .wifi_data>div,
+.configs>h3, .fixed_graph>h3, .wifi_data>h3{
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.utility_buttons .button{
+	width: 27%;
+}
+
+.configs .button, .fixed_graph .button, .wifi_data .button{
+	width: 80%;
+}
+
+.configs .val input, .fixed_graph input, .wifi_data .val input{
+	width: 85%;
+}
+
+.fixed_graph input{
+	text-align: center;
+}
+
+#exec_route_submit{
+	width: 90%;
+}
+
+.configs select{
+	width: 100%;
+	text-align: center;
+}
