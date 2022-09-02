@@ -10,8 +10,10 @@
 #include <FixedGraph.h>					//Fixed graph.
 
 #include <packet.h>
-#include <password.h>
 #include <const.h>
+
+//Functions.
+inline void settings_save(), settings_load();
 
 //Thread.
 void webserver_thread(void*), evaluate_thread(void*);
@@ -23,24 +25,32 @@ AsyncWebServer server(80);
 //Fixed graph.
 FixedGraph graph;
 
+//Device settings.
+settings_t settings;
+
 void setup(){
 	Serial.begin(9600);
-
-	//ABILITARE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	Serial.setDebugOutput(false);
-
-	// for(int i=0; i<40; i++)
-	// 	Serial.println();
-	// Serial.println("Ready");
 	
 	LittleFS.begin();
+	settings_load();
 
 	WiFi.mode(WIFI_STA);
-	WiFi.begin(STASSID, STAPSK);
+	WiFi.begin(settings.ssid, settings.pass);
 
-	while(WiFi.status() != WL_CONNECTED)
+	int i = 0;
+	while(WiFi.status() != WL_CONNECTED && i < MAX_WIFI_ATTEMPTS){
+		i++;
 		delay(500);
+	}
 	
+	//WiFi connection failed; entering in stand-alone WiFi mode (192.168.4.1).
+	if(i == MAX_WIFI_ATTEMPTS){
+		WiFi.disconnect();
+		WiFi.softAP(SOFTAP_SSID);
+	}
+
+	//Main taks spawn.
 	xTaskCreatePinnedToCore(webserver_thread,	"webserver",	10240,	NULL,	1,	&webserver_thread_handle,	PRO_CPU);
 	// xTaskCreatePinnedToCore(evaluate_thread,	"evaluate",		10240,	NULL,	1,	&evaluate_thread_handle,	APP_CPU);
 
@@ -51,25 +61,6 @@ void setup(){
 void loop(){}
 
 void webserver_thread(void *parameters){
-	server.on("/", HTTP_GET, [](AsyncWebServerRequest *req){
-		String res;
-
-		res += F("Hello! This is RoboticSystem-project ESP32-CAM!");
-		res += F("<br>");
-		res += F("<a href='/update'> Update </a>");
-		res += F("<br>");
-		res += F("<a href='/reset'> Reset </a>");
-		res += F("<br><br>");
-		res += F("<a href='/test'> Test </a>");
-		
-		req->send(200, "text/html", res);
-	});
-
-	server.on("/reset", HTTP_GET, [](AsyncWebServerRequest *req){
-		req->redirect("/");
-		ESP.restart();
-	});
-
 	server.on("/test", HTTP_GET, [](AsyncWebServerRequest *req){
 		graph.clearVertex(0.2, 0);
 		graph.dijkstra(0, 0);
@@ -113,8 +104,85 @@ void webserver_thread(void *parameters){
 		serializeJson(doc, json);
 		req->send(200, "application/json", json);
 	});
+	///////////////////////////////////////////////////////////////////////
 
-	server.serveStatic("/", LittleFS, "/");
+	server.on("/", HTTP_GET, [](AsyncWebServerRequest *req){
+		req->redirect("/index.html");
+	});
+
+	server.on("/settings/reset", HTTP_POST, [](AsyncWebServerRequest *req){
+		req->send(200);
+		ESP.restart();
+	});
+
+	server.on("/settings/wifi", HTTP_POST, [](AsyncWebServerRequest *req){
+		strcpy(settings.ssid, req->arg("ssid").c_str());
+		strcpy(settings.pass, req->arg("pass").c_str());
+
+		settings_save();
+
+		req->send(200);
+		ESP.restart();
+	});
+
+	server.on("/settings/ssid", HTTP_GET, [](AsyncWebServerRequest *req){
+		req->send(200, "text/plain", settings.ssid);
+	});
+
+	server.on("/commands/general", HTTP_POST, [](AsyncWebServerRequest *req){
+		//Example:	{"com":10,"data":[1,1,1,1]}
+		DynamicJsonDocument doc(1024);
+		
+		deserializeJson(doc, req->arg("data"));
+
+		String res;
+		serializeJson(doc, res);
+
+		req->send(200, "application/json", res);
+
+		//CONTINUARE IMPLEMENTANDO GLI ENDPOINT RIMANENTI
+
+		// deserializeJson(doc, data);
+
+		// //Set parameters number.
+		// packet.argc = doc["data"].size();
+
+		// //Set parameters.
+		// for(int i=0; i<packet.argc; i++)
+		// 	packet.argv[i] = doc["data"][i];
+
+		// //Flush incoming bytes.
+		// while(Serial.available())
+		// 	Serial.read();
+		
+		// //Send request.
+		// Serial.write((uint8_t*) &packet, sizeof(packet));
+
+		// //Wait response.
+		// while(!Serial.available())
+		// 	asm("nop");
+		
+		// //Read response.
+		// Serial.readBytes((uint8_t*) &packet, sizeof(packet));
+
+		// //Encode response.
+		// doc.clear();
+		// doc["com"] = packet.com;
+
+		// //Set parameters.
+		// for(int i=0; i<packet.argc; i++)
+		// 	doc["data"][i] = packet.argv[i];
+		
+		// serializeJson(doc, res);
+
+		// //Send JSON.
+		// WebSerial.println(res);
+
+		// req->send(200, "text/plain", settings.ssid);
+	});
+
+	server.serveStatic("/settings.bin", LittleFS, "/settings.bin");
+	server.serveStatic("/", LittleFS, "/public/");
 
 	AsyncElegantOTA.begin(&server);
 	server.begin();
@@ -126,4 +194,25 @@ void webserver_thread(void *parameters){
 void evaluate_thread(void *parameters){
 	for(;;)
 		vTaskDelay(1 / portTICK_PERIOD_MS);
+}
+
+inline void settings_save(){
+	File file = LittleFS.open("/settings.bin", "w");
+
+	file.write((uint8_t*) &settings, sizeof(settings));
+	file.close();
+}
+
+inline void settings_load(){
+	File file = LittleFS.open("/settings.bin", "r");
+
+	if(file){
+		file.read((uint8_t*) &settings, sizeof(settings));
+		file.close();
+	}
+	
+	else{
+		strcpy(settings.ssid, "STASSID");
+		strcpy(settings.pass, "STAPSK");
+	}
 }
