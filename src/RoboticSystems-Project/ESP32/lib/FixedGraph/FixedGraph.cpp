@@ -147,14 +147,14 @@ FixedGraph::FixedGraph(){
 }
 
 bool FixedGraph::dijkstra(float x, float y){
-	int src = -1;
-
 	parents_ready = false;
-	
+
+	int src = -1;
 	if(points.find(std::pair<float, float>(x, y)) != points.end())
 		src = points[std::pair<float, float>(x, y)];
 	
-	else return false;
+	else
+		src = points[__roundPointCoordinates(x, y)];
 
 	/**
 	 * @brief dist[i] will hold the shortest distance from src to i
@@ -195,7 +195,6 @@ bool FixedGraph::dijkstra(float x, float y){
 	}
 
 	parents_ready = true;
-
 	return true;
 }
 
