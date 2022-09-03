@@ -144,7 +144,10 @@ void loop(){
 	//Time to check for some serial packets.
 	if((tmp = ss.read()) == PACKET_PAYLOAD){
 		ss.readBytes((uint8_t*) &packet, sizeof(packet));
+
 		handle_packet();
+
+		// ss.write((uint8_t*) &PACKET_PAYLOAD, sizeof(PACKET_PAYLOAD));
 		ss.write((uint8_t*) &packet, sizeof(packet));
 	}
 }
@@ -271,6 +274,17 @@ inline void handle_xy_array(){
 	ss.readBytes((uint8_t*) xy_buf, xy_len * sizeof(xy_t));
 
 	target_rho = hypot(xy_buf[0].x, xy_buf[0].y);
+
+	//Debug: print array points.
+	// for(int i=0; i<xy_len; i++){
+	// 	Serial.print("(");
+	// 	Serial.print(xy_buf[i].x);
+	// 	Serial.print(", ");
+	// 	Serial.print(xy_buf[i].y);
+	// 	Serial.print(")");
+	// 	Serial.println();
+	// }
+	// Serial.println();
 }
 
 inline void EEPROM_load(){

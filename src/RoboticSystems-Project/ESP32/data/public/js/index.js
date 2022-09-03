@@ -1,3 +1,5 @@
+const PACKET_ARGV_MAXLEN = 4;
+
 $(document).ready(function(){
 	//Soft reset button.
 	$("#soft_reset").click(() => {
@@ -12,7 +14,7 @@ $(document).ready(function(){
 	$("#settings_download").click(() => window.open("/settings.bin"));
 
 	//Reset buttons.
-	$("#configs_reset").click(() => $(".configs .val input").val(""));
+	$("#configs_reset").click(() => $(".configs .val input").val("").attr("placeholder", ""));
 	$("#wifi_reset").click(() => $(".wifi_data .val input").val(""));
 
 	//Auto command submit on enter keypress.
@@ -28,7 +30,7 @@ $(document).ready(function(){
 		
 		//Retrive args.
 		let args = [];
-		for(let i=0; i<4; i++){
+		for(let i=0; i<PACKET_ARGV_MAXLEN; i++){
 			const val = $("#arg_" + i).val();
 			args.push(val == "" ? 0 : parseFloat(val));
 		}
@@ -56,6 +58,12 @@ $(document).ready(function(){
 		res.args.forEach((e, i) => $("#arg_" + i).val("").attr("placeholder", e));
 	});
 
+	//Clear placeholders on command change.
+	$("#configs_commands").change(() => {
+		for(let i=0; i<PACKET_ARGV_MAXLEN; i++)
+			$("#arg_" + i).val("").attr("placeholder", "");
+	});
+
 	//Fixed graph.
 	$("#add_obstacle_submit, #remove_obstacle_submit, #exec_route_submit").click(async function(){
 		//Identify pressed button.
@@ -78,6 +86,9 @@ $(document).ready(function(){
 		//Retrive x and y.
 		const x = parseFloat($("#x_val").val());
 		const y = parseFloat($("#y_val").val());
+
+		//Clear textbox.
+		$("#x_val, #y_val").val("");
 
 		if(isNaN(x) || isNaN(y)){
 			alert("Errore: una delle due coordinate e' un valore float non valido.");
