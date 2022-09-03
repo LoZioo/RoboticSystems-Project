@@ -32,12 +32,12 @@ template<class T> class SerialPlotter{
 		Stream& serial;
 
 		uint8_t sp;
-		struct SerialPlotter_frame_t{
-			const uint16_t frame_start = 0xBBAA;
+struct SerialPlotter_frame_t{
+	const uint16_t frame_start = 0xBBAA;
 
-			uint8_t payload_length;
-			T payload[PAYLOAD_MAXCHANNELS];
-		} data;
+	uint8_t payload_length;
+	T payload[PAYLOAD_MAXCHANNELS];
+} data;
 
 		bool append = false;
 
