@@ -1,15 +1,13 @@
 /**
  * @file RI32.h
  * @author Davide Scalisi
- * @brief 
+ * @brief This library is used to read data from two RI32
+ * 				rotary encoder: one is the left sensing wheel
+ * 				and the other one is the right sensing wheel.
  * @version 0.1
  * @date 2022-07-15
  * 
  * @copyright Copyright (c) 2022
- * 
- * This library is used to read data from two RI32
- * rotary encoder: one is the left sensing wheel
- * and the other one is the right sensing wheel.
  */
 
 #ifndef RI32_H

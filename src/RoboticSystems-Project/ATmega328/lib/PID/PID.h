@@ -1,13 +1,11 @@
 /**
  * @file PID.h
  * @author Davide Scalisi
- * @brief 
+ * @brief Implementation of a PID controller.
  * @version 0.1
  * @date 2022-07-16
  * 
  * @copyright Copyright (c) 2022
- * 
- * Implementation of a PID controller.
  */
 
 #ifndef PID_H

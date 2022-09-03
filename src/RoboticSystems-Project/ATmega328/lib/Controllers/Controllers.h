@@ -2,17 +2,17 @@
  * @file Controllers.h
  * @author Davide Scalisi
  * @brief 
+ * 	1)	Implementation of a cart speed controller.
+ * 			About the angular speed sign:
+ * 				+ is defined as left rotation.
+ * 				- is defined as right rotation.
+ * 
+ * 	2)	Implementation of a cart position controller.
+ * 
  * @version 0.1
  * @date 2022-08-01
  * 
  * @copyright Copyright (c) 2022
- * 
- * 1)	Implementation of a cart speed controller.
- * 		About the angular speed sign:
- * 			+ is defined as left rotation.
- * 			- is defined as right rotation.
- * 
- * 2)	Implementation of a cart position controller.
  */
 
 #ifndef ROBOT_CONTROLLERS_H

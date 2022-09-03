@@ -1,13 +1,11 @@
 /**
  * @file main.cpp
  * @author Davide Scalisi
- * @brief 
+ * @brief Main control loop of the cart.
  * @version 1.0
  * @date 2022-08-28
  * 
  * @copyright Copyright (c) 2022
- * 
- * Main control loop of the cart.
  */
 
 #include <Arduino.h>

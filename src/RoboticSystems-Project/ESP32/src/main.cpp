@@ -1,3 +1,13 @@
+/**
+ * @file main.cpp
+ * @author Davide Scalisi, Luigi Seminara
+ * @brief Main WebServer software.
+ * @version 1.0
+ * @date 2022-08-28
+ * 
+ * @copyright Copyright (c) 2022
+ */
+
 #include <Arduino.h>
 #include <WiFi.h>
 

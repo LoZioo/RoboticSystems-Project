@@ -1,22 +1,21 @@
 /**
  * @file SerialPlotter.h
  * @author Davide Scalisi
- * @brief 
+ * @brief Serial plotter API library.
+ * 				https://hackaday.io/project/5334-serialplot-realtime-plotting-software
+ * 
+ * 				SerialPlot custom frame settings:
+ * 					- Frame start:	AA BB
+ * 					- # Channels:		# of push() calls.
+ * 					- Frame size:		First byte of the payload is size.
+ * 					- Number Type:	Type of T (on the template).
+ * 					- Endianness:		Litte Endian.
+ * 					- Checksum:			Disabled.
+ * 
  * @version 0.1
  * @date 2022-07-28
  * 
  * @copyright Copyright (c) 2022
- * 
- * Serial plotter API library.
- * https://hackaday.io/project/5334-serialplot-realtime-plotting-software
- * 
- * SerialPlot custom frame settings:
- * 	- Frame start:	AA BB
- * 	- # Channels:		# of push() calls.
- * 	- Frame size:		First byte of the payload is size.
- * 	- Number Type:	Type of T (on the template).
- * 	- Endianness:		Litte Endian.
- * 	- Checksum:			Disabled.
  */
 
 #ifndef SERIALPLOTTER_H

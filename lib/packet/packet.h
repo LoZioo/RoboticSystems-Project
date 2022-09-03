@@ -1,13 +1,11 @@
 /**
  * @file packet.h
  * @author Davide Scalisi
- * @brief 
+ * @brief Definitions of the various binary data packets.
  * @version 0.1
  * @date 2022-08-11
  * 
  * @copyright Copyright (c) 2022
- * 
- * Definitions of the various binary data packets.
  */
 
 #include <Arduino.h>

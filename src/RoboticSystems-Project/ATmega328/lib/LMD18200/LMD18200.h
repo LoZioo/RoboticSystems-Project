@@ -1,14 +1,12 @@
 /**
  * @file LMD18200.h
  * @author Davide Scalisi
- * @brief 
+ * @brief This library uses the ATmega328 Timer1 to provide
+ * 				the control of two LMD18200 H-bridge driver.
  * @version 0.1
  * @date 2022-07-05
  * 
  * @copyright Copyright (c) 2022
- * 
- * This library uses the ATmega328 Timer1 to provide
- * the control of two LMD18200 H-bridge driver.
  */
 
 #ifndef LMD18200_H

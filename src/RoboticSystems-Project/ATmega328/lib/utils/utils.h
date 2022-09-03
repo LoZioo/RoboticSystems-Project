@@ -1,13 +1,11 @@
 /**
  * @file utils.h
  * @author Davide Scalisi
- * @brief 
+ * @brief Set of auxiliary functions.
  * @version 0.1
  * @date 2022-08-01
  * 
  * @copyright Copyright (c) 2022
- * 
- * Set of auxiliary functions.
  */
 
 #ifndef UTILS_H
